@@ -240,6 +240,9 @@ button{font:inherit;color:inherit}
 .toast small{display:block;font-family:var(--label);font-weight:700;letter-spacing:.16em;font-size:11px;color:var(--gold);text-transform:uppercase}
 .toast b{font-family:var(--title);font-weight:400;font-size:17px}
 
+.dls{display:grid;gap:10px}
+.dls .btn{text-align:center}
+
 @media (max-width:860px){
   #s-menu{grid-template-columns:1fr;align-content:center;justify-items:start}
   .relic{position:fixed;right:-18vw;top:18vh;width:70vw;opacity:.25;z-index:-1}
@@ -385,7 +388,7 @@ button{font:inherit;color:inherit}
         <h3>What I built</h3><ul class="built" id="p-built"></ul>
         <h3>Challenges</h3><div id="p-chal"></div>
       </article>
-      <aside class="pside"><div class="lbl">Project details</div><dl id="p-dl"></dl><div class="tags" id="p-tags"></div></aside>
+      <aside class="pside"><div class="lbl">Project details</div><dl id="p-dl"></dl><div class="tags" id="p-tags"></div><div class="dls" id="p-downloads"></div></aside>
     </div>
   </div>
 </section>
@@ -429,7 +432,8 @@ button{font:inherit;color:inherit}
       challenges:["A tight platform budget can trap players who build in the wrong order. The game detects a build order that can no longer be finished and shows a restart hint, so nobody is left stuck without knowing why.",
                   "Testing three levels by hand after every change was slow, so I wrote autopilot scripts that play each level start to finish with the real controls and check the budgets, recoveries and retries."],
       details:[["Genre","Puzzle platformer"],["Engine","Unity 6 (URP)"],["Language","C#"],["Platforms","Windows, Android"],["Year","2026"]],
-      tags:["Unity 6","C#","URP","Level design","Mobile controls","Cinematics"]
+      tags:["Unity 6","C#","URP","Level design","Mobile controls","Cinematics"],
+      downloads:[["Download for Windows","https://github.com/Chakradhar1104/chakradhar-portfolio/releases/download/builds-v1/GravityArchitect-Windows.zip"],["Download for Android (APK)","https://github.com/Chakradhar1104/chakradhar-portfolio/releases/download/builds-v1/GravityArchitect-Android.apk"]]
     },
     "science-quest-vr":{
       title:"Science Quest VR", year:"2026", engine:"Unity 6 · OpenXR", meta:"2026 · VR & PC · Educational science game",
@@ -452,7 +456,8 @@ button{font:inherit;color:inherit}
       challenges:["Players without a headset must never get stuck. XR is not started automatically: the game asks for an input mode and, if no headset runtime is found, shows a message and stays in keyboard and mouse.",
                   "Switching between VR and desktop without reloading. All four areas live in one scene, and moving between them is a fade plus a teleport, so the VR rig and XR session persist."],
       details:[["Genre","Educational, VR"],["Engine","Unity 6 (URP)"],["Language","C#"],["Platforms","Windows, PC VR (OpenXR)"],["Year","2026"]],
-      tags:["Unity 6","C#","OpenXR","XR Interaction Toolkit","VR UI","Education"]
+      tags:["Unity 6","C#","OpenXR","XR Interaction Toolkit","VR UI","Education"],
+      downloads:[["Download for Windows / PC VR","https://github.com/Chakradhar1104/chakradhar-portfolio/releases/download/builds-v1/ScienceQuestVR-Windows.zip"]]
     },
     "obstacle-assault":{
       title:"Obstacle Assault", year:"2026", engine:"Unreal Engine 5 · C++", meta:"2026 · PC · 3D obstacle course platformer",
@@ -475,7 +480,8 @@ button{font:inherit;color:inherit}
       challenges:["Falling platforms had to trigger reliably whether the player landed on them, brushed the edge or just stood still. The platform listens for both hits and overlaps, and also checks every frame whether the player is standing inside its top footprint.",
                   "A platform that is falling should stop doing everything else. Once the drop starts, it ignores its movement and rotation settings and switches to gravity and a slow tumble."],
       details:[["Genre","3D platformer"],["Engine","Unreal Engine 5"],["Language","C++, Blueprints"],["Platform","Windows"],["Year","2026"]],
-      tags:["Unreal Engine 5","C++","Blueprints","Level design","Platforming","UI"]
+      tags:["Unreal Engine 5","C++","Blueprints","Level design","Platforming","UI"],
+      downloads:[["Download for Windows (2 parts)","https://github.com/Chakradhar1104/chakradhar-portfolio/releases/tag/builds-v1"]]
     }
   };
   const SLUGS=Object.keys(PROJECTS);
@@ -622,7 +628,8 @@ button{font:inherit;color:inherit}
     $("p-built").innerHTML=p.built.map(([a,b])=>'<li><b>'+esc(a)+'</b><p>'+esc(b)+'</p></li>').join("");
     $("p-chal").innerHTML=p.challenges.map(x=>'<p>'+esc(x)+'</p>').join("");
     $("p-dl").innerHTML=p.details.map(([k,x])=>'<dt>'+esc(k)+'</dt><dd>'+esc(x)+'</dd>').join("");
-    $("p-tags").innerHTML=p.tags.map(x=>'<span>'+esc(x)+'</span>').join("");}
+    $("p-tags").innerHTML=p.tags.map(x=>'<span>'+esc(x)+'</span>').join("");
+    $("p-downloads").innerHTML=(p.downloads||[]).map(([t,u])=>'<a class="btn" href="'+esc(u)+'" target="_blank" rel="noopener">'+esc(t)+'</a>').join("");}
 
   /* copy email */
   $("copy").onclick=e=>{const t=$("mail").textContent,b=e.currentTarget;
