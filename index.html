@@ -162,7 +162,30 @@ button{font:inherit;color:inherit}
 .gfoot .open:hover,.gfoot .open:focus-visible{background:var(--gold)}
 
 /* about */
-.about{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(24px,4vw,56px);max-width:760px}
+.about{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(28px,5vw,72px);align-items:start}
+.story p{margin:0 0 14px;max-width:60ch;font-size:clamp(17px,1.5vw,19px)}
+.who{display:flex;align-items:center;gap:18px;margin-bottom:22px}
+.who .medal{width:84px;height:84px;flex:none}.who .medal b{font-size:40px}
+.who h3{margin:0 0 4px}
+.ledger h3{color:var(--gold);letter-spacing:.06em;margin:0 0 14px}
+.ledger h3:not(:first-child){margin-top:34px}
+.origins{list-style:none;margin:0;padding:0 0 0 22px;display:grid;gap:16px;border-left:1px solid color-mix(in srgb,var(--gold) 45%,transparent)}
+.origins li{position:relative;display:grid;gap:2px}
+.origins li::before{content:"";position:absolute;left:-29px;top:6px;width:11px;height:11px;transform:rotate(45deg);background:var(--glow);box-shadow:0 0 10px var(--glow)}
+.origins li:not(:first-child)::before{background:var(--paper);border:2px solid var(--gold);box-shadow:none}
+.origins b{font-family:var(--display);font-weight:800;font-size:clamp(17px,1.6vw,20px);letter-spacing:.02em}
+.origins span{color:var(--muted);font-size:16px}
+.attrs{display:grid;grid-template-columns:minmax(120px,.8fr) minmax(0,1.4fr);margin:0}
+.attrs dt,.attrs dd{padding:11px 0;border-top:1px solid var(--line)}
+.attrs dt{font-family:var(--title);font-size:18px;padding-right:14px}
+.attrs dd{margin:0;color:var(--muted);font-size:16px}
+.card{position:fixed;inset:0;z-index:36;display:grid;place-items:center;pointer-events:none;opacity:0}
+.card.go{animation:card 1.9s ease both}
+.card div{width:100%;padding:18px 16px;text-align:center;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--bg) 82%,transparent) 18%,color-mix(in srgb,var(--bg) 82%,transparent) 82%,transparent);
+  font-family:var(--display);font-weight:900;font-size:clamp(28px,5vw,64px);letter-spacing:.08em;color:var(--gold);text-shadow:0 0 30px color-mix(in srgb,var(--glow) 55%,transparent)}
+.card div::before,.card div::after{content:"◆";display:block;font-size:.3em;letter-spacing:0;opacity:.8;margin:.2em 0}
+@keyframes card{0%{opacity:0;transform:scale(1.04)}18%,70%{opacity:1;transform:none}100%{opacity:0}}
+@media (max-width:860px){.about{grid-template-columns:1fr}.attrs{grid-template-columns:1fr}.attrs dd{border-top:0;padding-top:0}}
 .medal{width:150px;height:150px;border-radius:50%;border:2px solid var(--gold);display:grid;place-items:center;position:relative;background:radial-gradient(circle,var(--panel),var(--paper2))}
 .medal::before{content:"";position:absolute;inset:8px;border-radius:50%;border:1px dashed var(--gold)}
 .medal b{font-family:var(--display);font-weight:900;font-size:72px;line-height:1;color:var(--gold)}
@@ -266,6 +289,7 @@ button{font:inherit;color:inherit}
 <div class="hud br"><span id="where" aria-hidden="true">Citadel</span><span id="trials" title="Trials completed">Trials 0/5</span></div>
 <canvas id="fx" aria-hidden="true"></canvas>
 <div class="wipe" id="wipe" aria-hidden="true"></div>
+<div class="card" id="card" aria-hidden="true"><div>The Architect's Record</div></div>
 <div class="toast" id="toast" role="status" aria-live="polite"><span class="gem" aria-hidden="true"></span><span><small>Trial complete</small><b id="toast-text"></b></span></div>
 
 <!-- boot -->
@@ -338,20 +362,31 @@ button{font:inherit;color:inherit}
 <!-- about -->
 <section class="screen paper scrollable" id="s-about" aria-label="About" hidden>
   <div class="sheet">
-    <div class="pagehead"><h2>The Architect</h2><button class="back" data-back>Esc · Back</button></div>
+    <div class="pagehead"><h2>About</h2><button class="back" data-back>Esc · Back</button></div>
     <div class="about">
-      <div>
-        <div class="medal" aria-hidden="true"><b>C</b></div>
-        <h3>Chakradhar</h3>
-        <p>I'm a game developer who builds the systems players touch: movement, building mechanics, hazards and the level design that ties them together. I work in Unity and Unreal Engine.</p>
-        <p>I care about games that feel fair. Gravity Architect is my clearest example: a tight resource puzzle where the game warns you before a laser fires and tells you when a build order can no longer be finished.</p>
-        <h3>What I bring</h3>
-        <ul class="facts">
-          <li><span>Gameplay programming in C# (Unity) and Blueprints (Unreal)</span></li>
-          <li><span>Level design with a deliberate difficulty curve</span></li>
-          <li><span>Shipping to more than one platform, including Android touch controls</span></li>
-          <li><span>Automated playtests that play levels with the real controls</span></li>
-        </ul>
+      <div class="story">
+        <div class="who"><div class="medal" aria-hidden="true"><b>C</b></div><div><h3>Chakradhar</h3><div class="lbl">Game Developer</div></div></div>
+        <p>I'm Chakradhar, a game developer. I build the parts of a game players actually touch: how a character moves, what a platform does under their feet, and how a level teaches its rules without a manual.</p>
+        <p>I work across both major engines. In Unity I made a space-rescue puzzle platformer that runs on PC and Android, and an educational science game you can play in a VR headset or with keyboard and mouse. In Unreal Engine 5 I built a third-person obstacle course driven by my own C++ platform code.</p>
+        <p>I care about games that feel fair. A laser should warn you before it fires, a hard level should be learnable, and if a player builds themselves into a corner, the game should say so instead of leaving them stuck.</p>
+        <p>My MSc in Game Technology builds on a bachelor's in computer science, and I'm looking for gameplay programming and level design roles.</p>
+      </div>
+      <div class="ledger">
+        <h3>Origins</h3>
+        <ol class="origins">
+          <li><b>MSc Game Technology</b><span>ICAT Design and Media College</span></li>
+          <li><b>Bachelor's in Computer Science</b><span>Sri Sai Krishna Degree College</span></li>
+        </ol>
+        <h3>Attributes</h3>
+        <dl class="attrs">
+          <dt>Gameplay systems</dt><dd>Platform-budget building, collapsing platforms, checkpoints and retries</dd>
+          <dt>Level design</dt><dd>Difficulty curves, readable hazards, timed doors</dd>
+          <dt>VR / XR</dt><dd>VR and keyboard play modes, floating menus in VR, no-headset fallback</dd>
+          <dt>UI and flow</dt><dd>Title screens, pause and game-over menus, story intros</dd>
+          <dt>Testing</dt><dd>Autopilot playtests that use the real controls</dd>
+          <dt>Platforms</dt><dd>Windows, Android, PC VR</dd>
+          <dt>Engines</dt><dd>Unity 6 (C#), Unreal Engine 5 (C++, Blueprints)</dd>
+        </dl>
       </div>
     </div>
   </div>
@@ -553,6 +588,7 @@ button{font:inherit;color:inherit}
     visit(name);$("hint").innerHTML=HINTS[name]||"";$("where").textContent=PLACE[name];
     if(name!=="project"){const vd=$("p-video");if(vd.pause)vd.pause()}
     if(name!=="games")document.querySelectorAll("#gallery video").forEach(x=>{x.pause();x.classList.remove("on")});
+    if(name==="about"&&prev!=="about"&&!reduce){const c=$("card");c.classList.remove("go");void c.offsetWidth;c.classList.add("go")}
     if(name==="project")renderProject(slug);
     if(name==="games")renderGames();
     const s=$(SCREENS[name]);if(s.classList.contains("scrollable"))s.scrollTop=0;
