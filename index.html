@@ -647,6 +647,8 @@ button{font:inherit;color:inherit}
   /* title: any key or click */
   $("s-title").addEventListener("click",()=>go("menu"));
   $("title-resume").addEventListener("click",e=>e.stopPropagation());
+  /* phones get the reflowing web resume (with its own PDF button); desktops download the PDF */
+  if(SMALL)document.querySelectorAll('a[href="Chakradhar_Guvalla_Resume.pdf"]').forEach(l=>{l.href="resume.html";l.removeAttribute("download");l.removeAttribute("target");l.textContent="View resume"});
 
   /* menu */
   const mb=[...document.querySelectorAll("#menu button")];let menuIdx=-1;
