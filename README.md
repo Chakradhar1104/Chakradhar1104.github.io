@@ -2,7 +2,7 @@
 
 A portfolio that plays like a game: a loading screen, a title screen ("press any key"), a main menu, a gallery of games with looping highlight reels, and a full page for each game.
 
-**Live site:** https://chakradhar-portfolio-iota.vercel.app
+**Live site:** https://chakradhar1104.github.io (also at https://chakradhar-portfolio-iota.vercel.app)
 
 ## Games
 
@@ -14,13 +14,13 @@ A portfolio that plays like a game: a loading screen, a title screen ("press any
 
 ## Download the games
 
-Playable builds are in the [Game builds release](https://github.com/Chakradhar1104/chakradhar-portfolio/releases/tag/builds-v1).
+Playable builds are in the [Game builds release](https://github.com/Chakradhar1104/Chakradhar1104.github.io/releases/tag/builds-v1).
 
 | Game | Download | How to run |
 |---|---|---|
-| Gravity Architect | [Windows (zip, 89 MB)](https://github.com/Chakradhar1104/chakradhar-portfolio/releases/download/builds-v1/GravityArchitect-Windows.zip) · [Android (APK, 58 MB)](https://github.com/Chakradhar1104/chakradhar-portfolio/releases/download/builds-v1/GravityArchitect-Android.apk) | Unzip and run `GravityArchitect.exe`, or install the APK on an Android phone. |
-| Science Quest VR | [Windows / PC VR (zip, 43 MB)](https://github.com/Chakradhar1104/chakradhar-portfolio/releases/download/builds-v1/ScienceQuestVR-Windows.zip) | Unzip and run `ScienceQuestVR.exe`. For VR, start Quest Link or SteamVR first. |
-| Obstacle Assault | [Part 1](https://github.com/Chakradhar1104/chakradhar-portfolio/releases/download/builds-v1/ObstacleAssault-Windows.part1.rar) · [Part 2](https://github.com/Chakradhar1104/chakradhar-portfolio/releases/download/builds-v1/ObstacleAssault-Windows.part2.rar) · [Part 3](https://github.com/Chakradhar1104/chakradhar-portfolio/releases/download/builds-v1/ObstacleAssault-Windows.part3.rar) · [Part 4](https://github.com/Chakradhar1104/chakradhar-portfolio/releases/download/builds-v1/ObstacleAssault-Windows.part4.rar) · [Part 5](https://github.com/Chakradhar1104/chakradhar-portfolio/releases/download/builds-v1/ObstacleAssault-Windows.part5.rar) · [Part 6](https://github.com/Chakradhar1104/chakradhar-portfolio/releases/download/builds-v1/ObstacleAssault-Windows.part6.rar) (2.4 GB total) | Download all 6 parts to one folder, extract part 1 with WinRAR or 7-Zip, run `ObstacleAssault.exe`. |
+| Gravity Architect | [Windows (zip, 89 MB)](https://github.com/Chakradhar1104/Chakradhar1104.github.io/releases/download/builds-v1/GravityArchitect-Windows.zip) · [Android (APK, 58 MB)](https://github.com/Chakradhar1104/Chakradhar1104.github.io/releases/download/builds-v1/GravityArchitect-Android.apk) | Unzip and run `GravityArchitect.exe`, or install the APK on an Android phone. |
+| Science Quest VR | [Windows / PC VR (zip, 43 MB)](https://github.com/Chakradhar1104/Chakradhar1104.github.io/releases/download/builds-v1/ScienceQuestVR-Windows.zip) | Unzip and run `ScienceQuestVR.exe`. For VR, start Quest Link or SteamVR first. |
+| Obstacle Assault | [Part 1](https://github.com/Chakradhar1104/Chakradhar1104.github.io/releases/download/builds-v1/ObstacleAssault-Windows.part1.rar) · [Part 2](https://github.com/Chakradhar1104/Chakradhar1104.github.io/releases/download/builds-v1/ObstacleAssault-Windows.part2.rar) · [Part 3](https://github.com/Chakradhar1104/Chakradhar1104.github.io/releases/download/builds-v1/ObstacleAssault-Windows.part3.rar) · [Part 4](https://github.com/Chakradhar1104/Chakradhar1104.github.io/releases/download/builds-v1/ObstacleAssault-Windows.part4.rar) · [Part 5](https://github.com/Chakradhar1104/Chakradhar1104.github.io/releases/download/builds-v1/ObstacleAssault-Windows.part5.rar) · [Part 6](https://github.com/Chakradhar1104/Chakradhar1104.github.io/releases/download/builds-v1/ObstacleAssault-Windows.part6.rar) (2.4 GB total) | Download all 6 parts to one folder, extract part 1 with WinRAR or 7-Zip, run `ObstacleAssault.exe`. |
 
 The builds are unsigned, so Windows SmartScreen may warn: choose **More info**, then **Run anyway**.
 
