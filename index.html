@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Chakradhar, game developer. Gameplay systems, level design and cinematics in Unity and Unreal.">
+<meta property="og:title" content="Chakradhar, Game Developer">
+<meta property="og:image" content="gravity-architect.jpg">
+<title>Chakradhar Game Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Marcellus&family=Alegreya:ital,wght@0,400;0,600;1,400&family=Alegreya+Sans+SC:wght@500;700&display=swap">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px system-ui,sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<style>
+/* Layout: the portfolio plays like a game. Boot -> title ("press any key") -> main menu -> screens.
+   One fixed desert-citadel sky sits behind every screen; content screens are parchment scrolls laid over it.
+   Light and Shadow are the site's two themes (sunlit palace / the shadow within). */
+:root{
+  --bg:#efe3c6; --ink:#2a1d12; --muted:#6e5a42; --line:#cdb88a;
+  --gold:#a8741c; --lapis:#1f3f8f; --glow:#f6c45a; --sky1:#f3c27a; --sky2:#e9895a; --sil:#5a3a22;
+  --paper:#f3e7cb; --paper2:#e8d6ac; --panel:#f8efda; --hud:#3b2716;
+  --display:"Cinzel", "Trajan Pro", Georgia, serif; --title:"Marcellus", Georgia, serif;
+  --body:"Alegreya", Georgia, serif; --label:"Alegreya Sans SC", "Gill Sans", sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#110a09; --ink:#efdcc0; --muted:#a88d70; --line:#4a2c22;
+  --gold:#d9a441; --lapis:#e2432b; --glow:#ff6a3d; --sky1:#3b0d0b; --sky2:#8a1d12; --sil:#070403;
+  --paper:#1b110e; --paper2:#24160f; --panel:#22150f; --hud:#efdcc0; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#110a09; --ink:#efdcc0; --muted:#a88d70; --line:#4a2c22;
+  --gold:#d9a441; --lapis:#e2432b; --glow:#ff6a3d; --sky1:#3b0d0b; --sky2:#8a1d12; --sil:#070403;
+  --paper:#1b110e; --paper2:#24160f; --panel:#22150f; --hud:#efdcc0; color-scheme:dark }
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.55;overflow:hidden}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.lbl{font-family:var(--label);font-weight:700;letter-spacing:.16em;font-size:13px;color:var(--gold);text-transform:uppercase}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+#sky{position:fixed;inset:0;width:100%;height:100%;display:block}
+
+/* ---------- HUD frame (on every screen) ---------- */
+.hud{position:fixed;z-index:30;font-family:var(--label);font-weight:700;letter-spacing:.14em;font-size:12px;color:var(--hud);display:flex;gap:14px;align-items:center;text-transform:uppercase}
+.hud.tl{top:calc(14px + env(safe-area-inset-top,0px));left:max(16px,env(safe-area-inset-left,0px))}
+.hud.tr{top:calc(12px + env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px))}
+.hud.bl{bottom:calc(14px + env(safe-area-inset-bottom,0px));left:max(16px,env(safe-area-inset-left,0px));opacity:.85}
+.hud.br{bottom:calc(14px + env(safe-area-inset-bottom,0px));right:max(16px,env(safe-area-inset-right,0px));opacity:.85}
+.hud .dot{width:7px;height:7px;background:var(--glow);transform:rotate(45deg);display:inline-block;margin-right:8px;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.25}}
+.hud kbd{font-family:inherit;border:1px solid currentColor;padding:1px 6px;margin-right:4px;opacity:.9}
+.path{display:inline-flex;border:1px solid var(--line);overflow:hidden;background:color-mix(in srgb,var(--bg) 60%,transparent)}
+.path button{all:unset;cursor:pointer;font-family:var(--label);font-weight:700;font-size:12px;letter-spacing:.14em;padding:6px 12px;color:var(--muted)}
+.path button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.path button:focus-visible{outline:2px solid var(--gold)}
+.frame-line{position:fixed;z-index:29;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));height:1px;
+  background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--gold) 60%,transparent) 20%,color-mix(in srgb,var(--gold) 60%,transparent) 80%,transparent);pointer-events:none}
+.frame-line.t{top:calc(46px + env(safe-area-inset-top,0px))} .frame-line.b{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
+
+/* ---------- screens ---------- */
+.screen{position:fixed;inset:0;z-index:10;padding:calc(60px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(58px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+  display:grid;animation:enter .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes enter{from{opacity:.3;transform:scale(1.03);filter:blur(4px)}}
+.scrollable{overflow-y:auto;overscroll-behavior:contain}
+
+/* boot */
+#s-boot{place-items:center;text-align:center;background:var(--bg)}
+#s-boot .box{display:grid;gap:16px;justify-items:center}
+#s-boot .bar{width:min(320px,70vw);height:6px;border:1px solid var(--gold);padding:1px}
+#s-boot .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--glow));transition:width .15s linear}
+#s-boot .pct{font-family:var(--label);font-weight:700;letter-spacing:.2em;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* title */
+#s-title{place-items:center;text-align:center;cursor:pointer}
+#s-title .wrap{display:grid;justify-items:center;gap:12px;max-width:100%}
+#s-title .eyebrow{font-family:var(--label);font-weight:700;letter-spacing:.5em;font-size:clamp(12px,1.6vw,16px);color:var(--ink);padding-left:.5em}
+#s-title h1{margin:0;font-family:var(--display);font-weight:900;font-size:clamp(34px,10.5vw,150px);line-height:.9;white-space:nowrap;letter-spacing:.02em;max-width:100%;
+  filter:drop-shadow(0 5px 0 color-mix(in srgb,var(--sil) 85%,transparent)) drop-shadow(0 0 34px color-mix(in srgb,var(--glow) 55%,transparent))}
+.ch{display:inline-block;background:linear-gradient(180deg,var(--glow) 8%,var(--gold) 48%,color-mix(in srgb,var(--gold) 45%,var(--ink)) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:drop .9s cubic-bezier(.2,.9,.25,1.25) both;animation-delay:calc(var(--i)*55ms + 100ms)}
+@keyframes drop{from{transform:translateY(-.35em) scale(1.15);opacity:.15;filter:blur(8px)}}
+.glass{width:clamp(90px,16vh,150px);height:auto;color:var(--gold);filter:drop-shadow(0 0 22px color-mix(in srgb,var(--glow) 60%,transparent))}
+/* hourglass: sand drains for ~5.6 s, then the glass turns over; the flipped glass looks exactly like the start, so the loop is seamless */
+.glass{animation:flip 7s cubic-bezier(.65,0,.35,1) infinite}
+.sandTop{animation:drain 7s linear infinite;transform-box:fill-box;transform-origin:50% 100%}
+.sandBot{animation:fill 7s linear infinite;transform-box:fill-box;transform-origin:50% 100%}
+.stream{animation:stream 7s linear infinite}
+@keyframes flip{0%,82%{rotate:0deg}100%{rotate:180deg}}
+@keyframes drain{0%{transform:scaleY(1)}80%,100%{transform:scaleY(0)}}
+@keyframes fill{0%{transform:scaleY(.08)}80%,100%{transform:scaleY(1)}}
+@keyframes stream{0%,78%{opacity:1}80%,100%{opacity:0}}
+#s-title .press{font-family:var(--label);font-weight:700;letter-spacing:.32em;font-size:clamp(13px,1.5vw,16px);color:var(--ink);animation:blink 1.4s steps(2) infinite;margin-top:6px}
+@keyframes blink{50%{opacity:.25}}
+#s-title .sub{font-family:var(--title);font-size:clamp(17px,2vw,22px);margin:0;max-width:40ch;color:var(--ink)}
+
+/* menu */
+#s-menu{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);align-items:center;gap:24px}
+.relic{position:relative;justify-self:center;width:min(42vh,36vw,420px);aspect-ratio:1;max-width:100%}
+.relic svg{position:absolute;inset:0;width:100%;height:100%}
+.relic .ring{animation:spin 60s linear infinite;color:var(--gold)}
+.relic .ring2{animation:spin 90s linear infinite reverse;color:var(--gold);opacity:.6}
+@keyframes spin{to{transform:rotate(360deg)}}
+.relic{display:grid;place-items:center}
+.relic .glass{position:relative;width:34%;height:auto;margin:0}  /* centred by the grid, so the flip turns around its own middle */
+.menu{list-style:none;margin:0;padding:0;display:grid;gap:clamp(4px,1.2vh,14px)}
+.menu button{all:unset;cursor:pointer;display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:18px;position:relative;padding:4px 0 4px 26px}
+.menu button::before{content:"";position:absolute;left:0;top:50%;width:12px;height:12px;border:2px solid var(--gold);transform:translateY(-50%) rotate(45deg);opacity:0;transition:opacity .2s, transform .3s}
+.menu .big{font-family:var(--display);font-weight:900;font-size:clamp(36px,min(7vw,11vh),96px);line-height:1;letter-spacing:.03em;color:color-mix(in srgb,var(--ink) 92%,transparent);
+  -webkit-text-stroke:0 transparent;transition:color .25s, letter-spacing .35s, transform .35s;text-shadow:0 3px 0 color-mix(in srgb,var(--sil) 40%,transparent)}
+.menu .cnt{font-family:var(--label);font-weight:700;font-size:14px;letter-spacing:.12em;color:var(--muted);align-self:start;margin-top:.9em}
+.menu .cap{grid-column:2;font-family:var(--title);font-size:17px;color:var(--muted);max-height:0;overflow:hidden;transition:max-height .35s}
+.menu button[aria-current="true"] .big,.menu button:hover .big,.menu button:focus-visible .big{color:var(--gold);letter-spacing:.06em}
+.menu button[aria-current="true"]::before,.menu button:focus-visible::before{opacity:1;transform:translateY(-50%) rotate(225deg)}
+.menu button[aria-current="true"] .cap{max-height:3em}
+.menu button:focus-visible{outline:none}
+.menu button .big span{display:inline-block}
+
+/* parchment pages */
+.paper{background:transparent}
+.sheet{position:relative;margin:0 auto;width:min(1180px,100%);background:
+  radial-gradient(120% 90% at 50% 0%,var(--paper) 55%,var(--paper2) 100%);border:1px solid var(--line);
+  box-shadow:0 30px 80px -30px rgba(0,0,0,.55),inset 0 0 0 6px var(--paper),inset 0 0 0 7px color-mix(in srgb,var(--gold) 50%,transparent);
+  padding:clamp(20px,4vw,48px)}
+.sheet::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.35;mix-blend-mode:multiply;background-image:var(--grain)}
+.pagehead{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:clamp(18px,3vh,32px)}
+.pagehead h2{margin:0;font-family:var(--display);font-weight:900;font-size:clamp(36px,6vw,76px);line-height:1;letter-spacing:.02em}
+.pagehead h2 sup{font-family:var(--label);font-size:.26em;color:var(--gold);margin-left:8px;vertical-align:top;letter-spacing:.1em}
+.back{all:unset;cursor:pointer;font-family:var(--label);font-weight:700;letter-spacing:.14em;font-size:13px;padding:8px 14px;border:1px solid var(--ink);text-transform:uppercase}
+.back:hover,.back:focus-visible{background:var(--ink);color:var(--bg)}
+
+/* games gallery: a row of arches */
+.gallery{display:flex;gap:clamp(14px,2vw,26px);overflow-x:auto;padding:10px 4px 18px;scroll-snap-type:x mandatory;justify-content:safe center}
+.door{all:unset;cursor:pointer;flex:0 0 clamp(220px,28vw,330px);scroll-snap-align:center;display:grid;gap:12px;text-align:left}
+.door .arch{position:relative;aspect-ratio:3/4;border:2px solid var(--gold);padding:7px;background:var(--panel);border-radius:50% 50% 6px 6px / 34% 34% 6px 6px;overflow:hidden;
+  transition:transform .35s, box-shadow .35s;transform:translateY(var(--ty,0))}
+.door .arch video{position:absolute;inset:7px;width:calc(100% - 14px);height:calc(100% - 14px);object-fit:cover;border-radius:50% 50% 3px 3px / 33% 33% 3px 3px;opacity:0;transition:opacity .6s;pointer-events:none;background:transparent}
+.door .arch video.on{opacity:1}
+.door .live{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:2;display:flex;gap:7px;align-items:center;font-family:var(--label);font-weight:700;font-size:11px;letter-spacing:.16em;color:#f6e7c8;background:rgba(0,0,0,.55);padding:4px 10px;opacity:0;transition:opacity .4s;white-space:nowrap}
+.door .live i{width:7px;height:7px;border-radius:50%;background:#ff5a3c;animation:pulse 1.2s ease-in-out infinite}
+.door .arch:has(video.on) .live{opacity:1}
+.door .arch img{display:block;width:100%;height:100%;object-fit:cover;border-radius:50% 50% 3px 3px / 33% 33% 3px 3px;transition:transform .7s cubic-bezier(.2,.8,.2,1);filter:saturate(.85)}
+.door .arch::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(115deg,transparent 35%,color-mix(in srgb,var(--glow) 60%,transparent) 50%,transparent 65%);background-size:260% 100%;background-position:130% 0;transition:background-position 1s ease}
+.door[aria-current="true"] .arch{--ty:-8px;box-shadow:0 24px 36px -18px var(--glow),0 0 0 4px color-mix(in srgb,var(--gold) 35%,transparent)}
+.door[aria-current="true"] .arch::after{animation:shine 1.1s ease-out both}
+@keyframes shine{from{background-position:130% 0}to{background-position:-160% 0}}
+.door[aria-current="true"] img{transform:scale(1.08);filter:none}
+.door .num{font-family:var(--label);font-weight:700;letter-spacing:.14em;font-size:13px;color:var(--gold)}
+.door h3{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(20px,2.2vw,26px);line-height:1.1}
+.door .meta{font-family:var(--label);font-weight:500;letter-spacing:.12em;font-size:12px;color:var(--muted)}
+.gfoot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:end;border-top:1px solid var(--line);padding-top:16px;margin-top:6px}
+.gfoot p{margin:0;max-width:60ch;font-family:var(--title);font-size:clamp(17px,1.8vw,20px)}
+.gfoot .open{all:unset;cursor:pointer;font-family:var(--label);font-weight:700;letter-spacing:.16em;font-size:14px;color:var(--bg);background:var(--ink);padding:10px 18px}
+.gfoot .open:hover,.gfoot .open:focus-visible{background:var(--gold)}
+
+/* about */
+.about{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(24px,4vw,56px)}
+.medal{width:150px;height:150px;border-radius:50%;border:2px solid var(--gold);display:grid;place-items:center;position:relative;background:radial-gradient(circle,var(--panel),var(--paper2))}
+.medal::before{content:"";position:absolute;inset:8px;border-radius:50%;border:1px dashed var(--gold)}
+.medal b{font-family:var(--display);font-weight:900;font-size:72px;line-height:1;color:var(--gold)}
+.about h3{font-family:var(--display);font-weight:800;font-size:clamp(22px,2.6vw,30px);margin:22px 0 10px}
+.about p{margin:0 0 12px;max-width:60ch}
+.gauges{display:grid;gap:12px}
+.gauge{display:grid;grid-template-columns:130px minmax(0,1fr) 40px;gap:12px;align-items:center}
+.gauge .n{font-family:var(--display);font-weight:600;font-size:17px}
+.tanks{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.tanks i{height:16px;border:1px solid var(--gold);transform:skewX(-18deg)}
+.tanks i.on{background:linear-gradient(180deg,var(--glow),var(--gold));animation:pour .45s ease-out both;animation-delay:calc(var(--i)*60ms + 200ms)}
+@keyframes pour{from{transform:skewX(-18deg) scaleY(.15);filter:brightness(2.2)}}
+.gauge .v{font-family:var(--label);font-weight:700;color:var(--gold);text-align:right;font-variant-numeric:tabular-nums}
+.facts{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.facts li{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}
+.facts li::before{content:"";width:10px;height:10px;margin:8px 0 0 8px;border:2px solid var(--gold);transform:rotate(45deg)}
+
+/* contact */
+#s-contact{place-items:center;text-align:center}
+#s-contact .wrap{display:grid;justify-items:center;gap:14px;max-width:640px}
+#s-contact h2{margin:0;font-family:var(--display);font-weight:900;font-size:clamp(34px,6vw,72px);line-height:1}
+#s-contact p{margin:0;font-family:var(--title);font-size:clamp(18px,2vw,22px)}
+.mail{font-family:var(--label);font-weight:700;letter-spacing:.08em;font-size:clamp(16px,2vw,20px);padding:12px 18px;border:1px dashed var(--gold);user-select:all;background:color-mix(in srgb,var(--bg) 70%,transparent)}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.btn{all:unset;cursor:pointer;font-family:var(--label);font-weight:700;letter-spacing:.14em;font-size:13px;padding:11px 18px;border:1px solid var(--ink);background:var(--ink);color:var(--bg);text-transform:uppercase;
+  clip-path:polygon(10px 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,10px 100%,0 50%)}
+.btn.ghost{background:color-mix(in srgb,var(--bg) 70%,transparent);color:var(--ink)}
+.btn:hover,.btn:focus-visible{background:var(--gold);border-color:var(--gold);color:var(--bg)}
+
+/* project page */
+.pv-head{display:grid;gap:10px;margin-bottom:22px}
+.pv-head h2{margin:0;font-family:var(--display);font-weight:900;font-size:clamp(34px,6.5vw,84px);line-height:.95;
+  background:linear-gradient(180deg,var(--glow) 8%,var(--gold) 50%,color-mix(in srgb,var(--gold) 45%,var(--ink)) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pv-pitch{margin:0;font-family:var(--title);font-size:clamp(18px,2.2vw,24px);max-width:48ch}
+.vframe{position:relative;aspect-ratio:16/10;max-width:100%;border:2px solid var(--gold);background:#000;box-shadow:0 34px 70px -34px var(--glow)}
+.vframe video{position:absolute;inset:8px;width:calc(100% - 16px);height:calc(100% - 16px);background:#000;object-fit:contain}
+.vcap{text-align:center;color:var(--muted);font-size:15px;margin:10px 0 0}
+.pfacts{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);margin:26px 0 40px;background:var(--panel)}
+.pfacts div{padding:14px 16px;border-right:1px solid var(--line)} .pfacts div:last-child{border-right:0}
+.pfacts b{display:block;font-family:var(--display);font-weight:800;font-size:clamp(20px,2.4vw,28px);color:var(--lapis)}
+.pgrid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:48px}
+.pbody h3{font-family:var(--display);font-weight:800;font-size:clamp(24px,2.8vw,32px);margin:36px 0 12px;display:flex;align-items:center;gap:14px}
+.pbody h3::after{content:"";flex:1;height:1px;background:var(--line)}
+.pbody > h3:first-child{margin-top:0}
+.pbody p{margin:0 0 12px;max-width:65ch}
+.loop{list-style:none;padding:0;margin:0;display:grid;gap:14px;counter-reset:s}
+.loop li{counter-increment:s;display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px}
+.loop li::before{content:counter(s);display:grid;place-items:center;height:44px;border:1px solid var(--gold);color:var(--gold);font-family:var(--display);font-weight:900;font-size:22px;
+  clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);background:color-mix(in srgb,var(--gold) 14%,transparent)}
+.loop b,.built b{font-family:var(--title);font-weight:400;font-size:20px;display:block}
+.built{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.built li{border:1px solid var(--line);background:var(--panel);padding:16px}
+.built p,.loop p{margin:4px 0 0;color:var(--muted);font-size:16px}
+.pside{align-self:start;position:sticky;top:0;border:1px solid var(--line);background:var(--panel);padding:22px;display:grid;gap:16px}
+.pside dl{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 14px}
+.pside dt{font-family:var(--label);font-weight:700;letter-spacing:.1em;font-size:12px;color:var(--gold);padding-top:3px;text-transform:uppercase}
+.pside dd{margin:0}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tags span{font-family:var(--label);font-weight:500;font-size:12px;letter-spacing:.08em;border:1px solid var(--line);padding:2px 8px;color:var(--muted)}
+
+/* interactivity layer */
+#fx{position:fixed;inset:0;width:100%;height:100%;z-index:40;pointer-events:none}
+.wipe{position:fixed;inset:0;z-index:35;pointer-events:none;transform:translateX(-110%);
+  background:linear-gradient(100deg,transparent 0 30%,color-mix(in srgb,var(--glow) 55%,transparent) 44%,color-mix(in srgb,var(--gold) 85%,transparent) 50%,color-mix(in srgb,var(--glow) 55%,transparent) 56%,transparent 70% 100%)}
+.wipe.go{animation:wipe .75s cubic-bezier(.6,0,.3,1)}
+@keyframes wipe{from{transform:translateX(-110%)}to{transform:translateX(110%)}}
+.hudbtn{all:unset;cursor:pointer;font-family:var(--label);font-weight:700;font-size:12px;letter-spacing:.14em;padding:6px 10px;border:1px solid var(--line);color:var(--muted);background:color-mix(in srgb,var(--bg) 60%,transparent);text-transform:uppercase}
+.hudbtn[aria-pressed="true"]{color:var(--bg);background:var(--ink)}
+.hudbtn:focus-visible{outline:2px solid var(--gold)}
+.menu button .big{transform:perspective(700px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateX(var(--tx,0px));transition:color .25s, letter-spacing .35s, transform .2s ease-out}
+.menu button[aria-current="true"] .big{--tx:10px}
+.door .arch{transform:perspective(800px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(var(--ty,0px))}
+.toast{position:fixed;left:50%;bottom:calc(64px + env(safe-area-inset-bottom,0px));z-index:45;display:flex;gap:14px;align-items:center;padding:10px 20px 10px 14px;
+  background:var(--ink);color:var(--bg);border:1px solid var(--gold);box-shadow:0 16px 40px -16px var(--glow);opacity:0;transform:translate(-50%,24px);transition:opacity .35s, transform .45s cubic-bezier(.2,.9,.3,1.3);pointer-events:none;max-width:calc(100vw - 32px)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast .gem{width:26px;height:26px;flex:none;border:2px solid var(--gold);transform:rotate(45deg);background:linear-gradient(135deg,var(--glow),var(--gold))}
+.toast small{display:block;font-family:var(--label);font-weight:700;letter-spacing:.16em;font-size:11px;color:var(--gold);text-transform:uppercase}
+.toast b{font-family:var(--title);font-weight:400;font-size:17px}
+
+@media (max-width:860px){
+  #s-menu{grid-template-columns:1fr;align-content:center;justify-items:start}
+  .relic{position:fixed;right:-18vw;top:18vh;width:70vw;opacity:.25;z-index:-1}
+  .about,.pgrid{grid-template-columns:1fr}
+  .pside{position:static}
+  .pfacts{grid-template-columns:1fr 1fr} .pfacts div:nth-child(2){border-right:0} .pfacts div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .built{grid-template-columns:1fr}
+  .gauge{grid-template-columns:100px minmax(0,1fr) 34px}
+  .hud.bl{display:none}
+}
+</style>
+</head>
+<body>
+<canvas id="sky" aria-hidden="true"></canvas>
+<div class="frame-line t" aria-hidden="true"></div><div class="frame-line b" aria-hidden="true"></div>
+<div class="hud tl"><span><span class="dot"></span>Chakradhar</span><span style="opacity:.7">Game Developer</span></div>
+<div class="hud tr"><button class="hudbtn" id="snd" aria-pressed="true">Sound on</button><div class="path" role="group" aria-label="Choose your path"><button id="p-light" aria-pressed="false">Light</button><button id="p-shadow" aria-pressed="false">Shadow</button></div></div>
+<div class="hud bl" id="hint" aria-hidden="true"></div>
+<div class="hud br"><span id="where" aria-hidden="true">Citadel</span><span id="trials" title="Trials completed">Trials 0/5</span></div>
+<canvas id="fx" aria-hidden="true"></canvas>
+<div class="wipe" id="wipe" aria-hidden="true"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"><span class="gem" aria-hidden="true"></span><span><small>Trial complete</small><b id="toast-text"></b></span></div>
+
+<!-- boot -->
+<section class="screen" id="s-boot" aria-label="Loading" hidden>
+  <div class="box">
+    <svg class="glass" viewBox="0 0 60 96" aria-hidden="true"><rect x="4" y="2" width="52" height="6" rx="1" fill="currentColor"/>
+      <rect x="4" y="88" width="52" height="6" rx="1" fill="currentColor"/>
+      <path d="M8 6v84M52 6v84" stroke="currentColor" stroke-width="2"/>
+      <path d="M10 8 C10 30 28 40 30 48 C28 56 10 66 10 88 M50 8 C50 30 32 40 30 48 C32 56 50 66 50 88" fill="none" stroke="currentColor" stroke-width="2"/>
+      <g clip-path="url(#topBulb)"><rect class="sandTop" x="8" y="22" width="44" height="26" fill="var(--glow)"/></g>
+      <rect class="stream" x="29.3" y="47" width="1.4" height="40" fill="var(--glow)"/>
+      <g clip-path="url(#botBulb)"><rect class="sandBot" x="8" y="66" width="44" height="22" fill="var(--glow)"/></g></svg>
+    <div class="lbl">The sands are settling</div>
+    <div class="bar"><i id="boot-bar"></i></div>
+    <div class="pct" id="boot-pct">0%</div>
+  </div>
+</section>
+
+<!-- title -->
+<section class="screen" id="s-title" aria-label="Title screen" hidden>
+  <div class="wrap">
+    <div class="eyebrow">Portfolio</div>
+    <h1 id="name">CHAKRADHAR</h1>
+    <p class="sub">Game developer. Gameplay systems, level design and cinematics in Unity and Unreal.</p>
+    <svg class="glass" viewBox="0 0 60 96" aria-hidden="true"><rect x="4" y="2" width="52" height="6" rx="1" fill="currentColor"/>
+      <rect x="4" y="88" width="52" height="6" rx="1" fill="currentColor"/>
+      <path d="M8 6v84M52 6v84" stroke="currentColor" stroke-width="2"/>
+      <path d="M10 8 C10 30 28 40 30 48 C28 56 10 66 10 88 M50 8 C50 30 32 40 30 48 C32 56 50 66 50 88" fill="none" stroke="currentColor" stroke-width="2"/>
+      <g clip-path="url(#topBulb)"><rect class="sandTop" x="8" y="22" width="44" height="26" fill="var(--glow)"/></g>
+      <rect class="stream" x="29.3" y="47" width="1.4" height="40" fill="var(--glow)"/>
+      <g clip-path="url(#botBulb)"><rect class="sandBot" x="8" y="66" width="44" height="22" fill="var(--glow)"/></g></svg>
+    <div class="press" id="press">Press any key or tap to begin</div>
+  </div>
+</section>
+
+<!-- menu -->
+<section class="screen" id="s-menu" aria-label="Main menu" hidden>
+  <div class="relic" aria-hidden="true">
+    <svg class="ring" viewBox="0 0 200 200"><g fill="none" stroke="currentColor" stroke-width=".8">
+      <circle cx="100" cy="100" r="96"/><circle cx="100" cy="100" r="88" stroke-dasharray="2 4"/>
+      <path d="M100 18 L118 82 L182 100 L118 118 L100 182 L82 118 L18 100 L82 82 Z"/>
+      <path d="M42 42 L112 88 L158 42 L112 112 L158 158 L88 112 L42 158 L88 88 Z" opacity=".7"/></g></svg>
+    <svg class="ring2" viewBox="0 0 200 200"><g fill="none" stroke="currentColor" stroke-width=".6">
+      <circle cx="100" cy="100" r="70"/><circle cx="100" cy="100" r="62"/>
+      <g id="ticks"></g></g></svg>
+    <svg class="glass" viewBox="0 0 60 96"><rect x="4" y="2" width="52" height="6" rx="1" fill="currentColor"/>
+      <rect x="4" y="88" width="52" height="6" rx="1" fill="currentColor"/>
+      <path d="M8 6v84M52 6v84" stroke="currentColor" stroke-width="2"/>
+      <path d="M10 8 C10 30 28 40 30 48 C28 56 10 66 10 88 M50 8 C50 30 32 40 30 48 C32 56 50 66 50 88" fill="none" stroke="currentColor" stroke-width="2"/>
+      <g clip-path="url(#topBulb)"><rect class="sandTop" x="8" y="22" width="44" height="26" fill="var(--glow)"/></g>
+      <rect class="stream" x="29.3" y="47" width="1.4" height="40" fill="var(--glow)"/>
+      <g clip-path="url(#botBulb)"><rect class="sandBot" x="8" y="66" width="44" height="22" fill="var(--glow)"/></g></svg>
+  </div>
+  <nav aria-label="Main menu"><ul class="menu" id="menu">
+    <li><button data-go="games" aria-current="false"><span class="big">Games</span><span class="cnt" id="game-count">01</span><span class="cap">The halls of work. Open a game to watch it played.</span></button></li>
+    <li><button data-go="about"><span class="big">About</span><span class="cnt"></span><span class="cap">Who I am, what I build and the tools I use.</span></button></li>
+    <li><button data-go="contact"><span class="big">Contact</span><span class="cnt"></span><span class="cap">Send a messenger. Open to gameplay and level design roles.</span></button></li>
+  </ul></nav>
+</section>
+
+<!-- games -->
+<section class="screen paper scrollable" id="s-games" aria-label="Games" hidden>
+  <div class="sheet" style="align-self:center">
+    <div class="pagehead"><h2>The Chronicle<sup id="g-count">01</sup></h2><button class="back" data-back>Esc · Back</button></div>
+    <div class="gallery" id="gallery"></div>
+    <div class="gfoot"><div><div class="lbl" id="g-meta"></div><p id="g-desc"></p></div><button class="open" id="g-open">Enter · Open</button></div>
+  </div>
+</section>
+
+<!-- about -->
+<section class="screen paper scrollable" id="s-about" aria-label="About" hidden>
+  <div class="sheet">
+    <div class="pagehead"><h2>The Architect</h2><button class="back" data-back>Esc · Back</button></div>
+    <div class="about">
+      <div>
+        <div class="medal" aria-hidden="true"><b>C</b></div>
+        <h3>Chakradhar</h3>
+        <p>I'm a game developer who builds the systems players touch: movement, building mechanics, hazards and the level design that ties them together. I work in Unity and Unreal Engine.</p>
+        <p>I care about games that feel fair. Gravity Architect is my clearest example: a tight resource puzzle where the game warns you before a laser fires and tells you when a build order can no longer be finished.</p>
+        <h3>What I bring</h3>
+        <ul class="facts">
+          <li><span>Gameplay programming in C# (Unity) and Blueprints (Unreal)</span></li>
+          <li><span>Level design with a deliberate difficulty curve</span></li>
+          <li><span>Cinematics: intros, menu flights and rescue sequences</span></li>
+          <li><span>Shipping to more than one platform, including Android touch controls</span></li>
+          <li><span>Automated playtests that play levels with the real controls</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="margin-top:0">Arsenal</h3>
+        <div class="gauges" id="gauges"></div>
+        <p style="color:var(--muted);font-size:15px;margin-top:14px">Self-assessed, out of ten.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- contact -->
+<section class="screen" id="s-contact" aria-label="Contact" hidden>
+  <div class="wrap">
+    <div class="lbl">Send a messenger</div>
+    <h2>Join the quest</h2>
+    <p>Studios, game jams and collaborators are welcome. I'm looking for gameplay programming and level design roles.</p>
+    <span class="mail" id="mail">chakradharguvalla11@gmail.com</span>
+    <div class="row"><button class="btn" id="copy">Copy email</button><a class="btn ghost" href="mailto:chakradharguvalla11@gmail.com">Send email</a><a class="btn ghost" href="https://www.linkedin.com/in/chakradhar-guvalla-23571a41a" target="_blank" rel="noopener">LinkedIn</a><a class="btn ghost" href="https://github.com/Chakradhar1104" target="_blank" rel="noopener">GitHub</a></div>
+    <button class="back" data-back style="margin-top:10px">Esc · Back</button>
+  </div>
+</section>
+
+<!-- project -->
+<section class="screen paper scrollable" id="s-project" aria-label="Project" hidden>
+  <div class="sheet">
+    <div class="pagehead" style="margin-bottom:10px"><div class="lbl" id="p-meta"></div><button class="back" data-back>Esc · Back</button></div>
+    <div class="pv-head"><h2 id="p-title"></h2><p class="pv-pitch" id="p-pitch"></p></div>
+    <div class="vframe"><video id="p-video" controls playsinline preload="metadata"></video></div>
+    <p class="vcap" id="p-cap"></p>
+    <div class="pfacts" id="p-facts"></div>
+    <div class="pgrid">
+      <article class="pbody">
+        <h3>About the game</h3><div id="p-about"></div>
+        <h3>How it plays</h3><ol class="loop" id="p-loop"></ol>
+        <h3>What I built</h3><ul class="built" id="p-built"></ul>
+        <h3>Challenges</h3><div id="p-chal"></div>
+      </article>
+      <aside class="pside"><div class="lbl">Project details</div><dl id="p-dl"></dl><div class="tags" id="p-tags"></div></aside>
+    </div>
+  </div>
+</section>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <clipPath id="topBulb"><path d="M10 8 C10 30 28 40 30 48 C32 40 50 30 50 8 Z"/></clipPath>
+    <clipPath id="botBulb"><path d="M10 88 C10 66 28 56 30 48 C32 56 50 66 50 88 Z"/></clipPath>
+    
+  </defs>
+</svg>
+
+<script>
+(function(){
+  const root=document.documentElement, v=n=>getComputedStyle(root).getPropertyValue(n).trim();
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const dark=()=>root.dataset.theme?root.dataset.theme==="dark":matchMedia("(prefers-color-scheme: dark)").matches;
+  const $=id=>document.getElementById(id);
+  const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+  /* ---------- data: add a game by adding an entry ---------- */
+  const PROJECTS={
+    "gravity-architect":{
+      title:"Gravity Architect", year:"2026", engine:"Unity 6 · C#", meta:"2026 · PC & Android · Space-rescue puzzle platformer",
+      thumb:"gravity-architect.jpg", video:"gravity-architect-reel.mp4", highlight:[0,1e9],
+      blurb:"A space-rescue puzzle platformer. Spend a handful of platforms on energy bridges to get a stranded astronaut to the rescue shuttle.",
+      pitch:"Rebuild the path. Defy gravity. Spend a handful of platforms on energy bridges and get a stranded astronaut to the rescue shuttle.",
+      caption:"Highlights from all three levels: Orbital Outpost, Industrial Rift and Gravity Core, ending on the shuttle rescue. Captured from the Windows build.",
+      facts:[["Levels","3"],["Platforms","PC · Android"],["Engine","Unity 6 URP"],["Language","C#"]],
+      about:["Gravity Architect is a space-rescue puzzle platformer. An astronaut is stranded on a chain of broken orbital stations, and a rescue shuttle waits on the far platform. The stations are split by chasms, and the only way across is to build energy bridges.",
+             "Every bridge costs one platform, and you start each level with only one or two. Optional caches on side islands add more. The puzzle is deciding where to spend them, in what order, while dodging the hazards between you and the green beacon that calls the shuttle."],
+      loop:[["Plan the route","Count your platforms, spot the caches you'll need and work out the build order."],
+            ["Build and cross","Walk to a glowing socket and press E to raise a bridge. Jump the short gaps and time your way past lasers."],
+            ["Call the shuttle","Step onto the green beacon. The shuttle lands, picks up the astronaut and departs."]],
+      built:[["Platform-budget building","Glowing build sockets with a live cost preview, and exact platform budgets per level so every bridge counts."],
+             ["Three-level difficulty curve","Orbital Outpost teaches the controls, Industrial Rift adds a sweeping laser and a locked door, and Gravity Core combines an electrified floor, a laser curtain and a 12-second door."],
+             ["Recovery and retry","Falling or a laser hit respawns you at the last checkpoint, with limited recoveries on harder levels. Retry restores every bridge, cache, switch and door."],
+             ["Readable hazards","Laser emitters blink amber, flicker and play a warning tone before they fire, so a hit never feels unfair."],
+             ["Cinematics","An intro cinematic, a ship flight on the main menu and a shuttle rescue sequence at the end of each level."],
+             ["Android port","On-screen joystick, jump and build controls, and a separate mobile renderer for phones."]],
+      challenges:["A tight platform budget can trap players who build in the wrong order. The game detects a build order that can no longer be finished and shows a restart hint, so nobody is left stuck without knowing why.",
+                  "Testing three levels by hand after every change was slow, so I wrote autopilot scripts that play each level start to finish with the real controls and check the budgets, recoveries and retries."],
+      details:[["Genre","Puzzle platformer"],["Engine","Unity 6 (URP)"],["Language","C#"],["Platforms","Windows, Android"],["Year","2026"]],
+      tags:["Unity 6","C#","URP","Level design","Mobile controls","Cinematics"]
+    },
+    "science-quest-vr":{
+      title:"Science Quest VR", year:"2026", engine:"Unity 6 · OpenXR", meta:"2026 · VR & PC · Educational science game",
+      thumb:"science-quest.jpg", video:"science-quest-reel.mp4", highlight:[0,1e9],
+      blurb:"An educational science adventure you can play in a VR headset or with keyboard and mouse. Sort waste, line up the planets and build molecules, then prove it in a quiz.",
+      pitch:"Three hands-on science labs at a floating academy. Learn by picking things up, then prove it in a quiz.",
+      caption:"Highlights from all three labs: Recycling Rescue, Planet Parade and Molecule Maker, ending on the Game Complete screen. Includes game audio: unmute the player to hear it.",
+      facts:[["Labs","3"],["Play modes","VR · Keyboard & mouse"],["Engine","Unity 6 URP"],["XR","OpenXR + XRI"]],
+      about:["Science Quest VR puts you in the shoes of a trainee scientist at a floating science academy. A hub with a holographic solar system has portals to three labs, each harder than the last: environmental science, astronomy and chemistry.",
+             "Every lab is a hands-on task followed by a knowledge check. Picking up any object shows a fact card, three hidden Fact Orbs reward exploring, and a wrong quiz answer explains why. The whole game works both in a VR headset and with keyboard and mouse."],
+      loop:[["Explore the lab","Read the mission briefing, then pick up objects to learn a fact about each one."],
+            ["Complete the task","Sort 8 waste items into the right bins, place 8 planets in order from the Sun, or build H2O, CO2 and CH4 in the Reaction Chamber."],
+            ["Pass the quiz","Answer the knowledge check (the last one is timed at 20 seconds) and earn up to 3 stars."]],
+      built:[["Two complete input modes","Every level, menu and quiz works with a VR headset and controllers (OpenXR, XR Interaction Toolkit) and with keyboard and mouse."],
+             ["Three themed labs","Recycling Rescue (easy), Planet Parade (medium) and Molecule Maker (hard), each with its own interaction: sorting, ordering and combining."],
+             ["Scoring and progression","Points per task and correct answer, a time bonus, penalties for mistakes, 3-star ratings, saved best scores and level unlocks."],
+             ["VR-ready UI","The same menus and HUD switch between screen overlays on a monitor and world-space panels in VR, with a HUD that follows your head."],
+             ["Learning systems","Fact cards on every object, hidden Fact Orbs and quiz hints that explain wrong answers."],
+             ["Generated content and autopilot","Editor tools that build the whole scene from code, and a demo autopilot that plays the full game for recording."]],
+      challenges:["Players without a headset must never get stuck. XR is not started automatically: the game asks for an input mode and, if no headset runtime is found, shows a message and stays in keyboard and mouse.",
+                  "Switching between VR and desktop without reloading. All four areas live in one scene, and moving between them is a fade plus a teleport, so the VR rig and XR session persist."],
+      details:[["Genre","Educational, VR"],["Engine","Unity 6 (URP)"],["Language","C#"],["Platforms","Windows, PC VR (OpenXR)"],["Year","2026"]],
+      tags:["Unity 6","C#","OpenXR","XR Interaction Toolkit","VR UI","Education"]
+    },
+    "obstacle-assault":{
+      title:"Obstacle Assault", year:"2026", engine:"Unreal Engine 5 · C++", meta:"2026 · PC · 3D obstacle course platformer",
+      thumb:"obstacle-assault.jpg", video:"obstacle-assault-reel.mp4", highlight:[0,1e9],
+      blurb:"A third-person sky-high obstacle course in Unreal Engine 5. Run, jump and survive moving, spinning and collapsing platforms to reach the portal.",
+      pitch:"The Milky Way is ending and the only way out is through a portal. Run the obstacle course in the sky before the platforms drop out from under you.",
+      caption:"Highlights: the title screen, the comic story intro, and a run up the ramp and across the floating panels. Captured from the Windows build.",
+      facts:[["Engine","Unreal Engine 5"],["Language","C++ & Blueprints"],["Camera","Third person"],["Platform","Windows"]],
+      about:["Obstacle Assault opens with a comic-book story: breaking news says the Milky Way is about to end, and the only way to survive is to escape through a portal. Then you are dropped onto a ramp facing an obstacle course hanging in the sky.",
+             "The course is built from moving, rotating and falling platforms, barricades and floating panels. Checkpoints save your progress along the way, a fall means Game Over, and a finish platform waits at the end."],
+      loop:[["Read the route","Watch how each platform moves before you commit to a jump."],
+            ["Run and jump","Time your jumps across moving, spinning and floating platforms, and keep moving on the ones that start to fall."],
+            ["Reach the finish","Hit checkpoints on the way and land on the finish platform to escape."]],
+      built:[["Moving platform system (C++)","One C++ actor that handles straight-line movement with ping-pong or looping, constant rotation, and an optional start delay, all tunable per platform in the editor."],
+             ["Collapsing platforms","Platforms that sense the player standing on them, start a countdown, then drop with gravity and tumble as they fall."],
+             ["Course pieces","Blueprint checkpoint, finish, interactive, moving, rotating and falling platforms built on top of the C++ base."],
+             ["Story intro","A comic-panel opening that sets up the escape before the level starts."],
+             ["Menus and flow","Main menu (Start, Options, Quit, Credits), a pause menu, and a Game Over screen with Restart and Quit Level."],
+             ["Environment","A bright sky course over a forest island, dressed with construction and nature art packs."]],
+      challenges:["Falling platforms had to trigger reliably whether the player landed on them, brushed the edge or just stood still. The platform listens for both hits and overlaps, and also checks every frame whether the player is standing inside its top footprint.",
+                  "A platform that is falling should stop doing everything else. Once the drop starts, it ignores its movement and rotation settings and switches to gravity and a slow tumble."],
+      details:[["Genre","3D platformer"],["Engine","Unreal Engine 5"],["Language","C++, Blueprints"],["Platform","Windows"],["Year","2026"]],
+      tags:["Unreal Engine 5","C++","Blueprints","Level design","Platforming","UI"]
+    }
+  };
+  const SLUGS=Object.keys(PROJECTS);
+  const SKILLS=[["C#",8],["Unity",8],["Unreal",7],["Blueprints",8],["Level design",8],["Cinematics",7],["Game AI",7],["Mobile",6]];
+
+  /* ---------- theme ---------- */
+  const bL=$("p-light"), bS=$("p-shadow");
+  function sync(){bL.setAttribute("aria-pressed",String(!dark()));bS.setAttribute("aria-pressed",String(dark()));skyline=null;parts=[];if(reduce)drawSky(0)}
+  bL.onclick=e=>{e.stopPropagation();root.dataset.theme="light";sync()};
+  bS.onclick=e=>{e.stopPropagation();root.dataset.theme="dark";sync();achieve("shadow")};
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change",sync);
+
+  /* paper grain */
+  (function(){const c=document.createElement("canvas");c.width=c.height=160;const g=c.getContext("2d"),d=g.createImageData(160,160);
+    for(let i=0;i<d.data.length;i+=4){const n=200+Math.random()*55;d.data[i]=n;d.data[i+1]=n*.95;d.data[i+2]=n*.85;d.data[i+3]=60}
+    g.putImageData(d,0,0);root.style.setProperty("--grain","url("+c.toDataURL()+")");})();
+
+  /* ticks on the relic */
+  $("ticks").innerHTML=Array.from({length:48},(_,i)=>{const a=i/48*Math.PI*2,r1=70,r2=i%4?74:80;
+    return '<line x1="'+(100+Math.cos(a)*r1).toFixed(1)+'" y1="'+(100+Math.sin(a)*r1).toFixed(1)+'" x2="'+(100+Math.cos(a)*r2).toFixed(1)+'" y2="'+(100+Math.sin(a)*r2).toFixed(1)+'"/>'}).join("");
+
+  /* title letters */
+  const nm=$("name"), txt=nm.textContent; nm.setAttribute("aria-label",txt);
+  nm.innerHTML=[...txt].map((c,i)=>'<span class="ch" aria-hidden="true" style="--i:'+i+'">'+c+'</span>').join("");
+
+  /* gauges */
+  $("gauges").innerHTML=SKILLS.map(([n,k])=>'<div class="gauge"><span class="n">'+n+'</span><span class="tanks">'+Array.from({length:10},(_,i)=>'<i style="--i:'+i+'" class="'+(i<k?"on":"")+'"></i>').join("")+'</span><span class="v">'+k+'/10</span></div>').join("");
+
+  /* ---------- sky: parallax citadel + drifting sand / embers ---------- */
+  const sky=$("sky"); let skyline=null, parts=[], mouse=.5, mouseY=.5;
+  addEventListener("pointermove",e=>{mouse=e.clientX/innerWidth;mouseY=e.clientY/innerHeight});
+  function rng(s){return()=>{s=(s*16807)%2147483647;return(s-1)/2147483646}}
+  function size(c){const r=c.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1),W=Math.max(1,Math.round(r.width*d)),H=Math.max(1,Math.round(r.height*d));
+    if(c.width!==W||c.height!==H){c.width=W;c.height=H}const g=c.getContext("2d");g.setTransform(d,0,0,d,0,0);return[g,r.width,r.height]}
+  function build(w,h){const R=rng(42),base=h,S=[];
+    for(let x=-80;x<w+80;x+=26+R()*40){const bh=h*(.1+R()*.12);S.push([0,"rect",x,base-bh,24+R()*30,bh]);if(R()<.25)S.push([0,"dome",x+14,base-bh,12])}
+    const zx=w*.04,zw=Math.min(420,w*.34);for(let i=0;i<5;i++){const sw=zw*(1-i*.17),sh=h*.06;S.push([1,"rect",zx+(zw-sw)/2,base-h*.08-sh*(i+1),sw,sh+1])}S.push([1,"rect",zx,base-h*.08,zw,h*.08]);
+    const px=w*.52,pw=Math.min(560,w*.42);S.push([2,"rect",px,base-h*.24,pw,h*.24]);S.push([2,"dome",px+pw*.5,base-h*.24,pw*.15]);
+    S.push([2,"dome",px+pw*.18,base-h*.24,pw*.07]);S.push([2,"dome",px+pw*.82,base-h*.24,pw*.07]);
+    [[px-14,.5],[px+pw+2,.46],[px+pw*.36,.36]].forEach(([x,t])=>{S.push([2,"rect",x,base-h*t,12,h*t]);S.push([2,"dome",x+6,base-h*t,9])});
+    const A=[];for(let i=0;i<7;i++)A.push([px+pw*(.1+i*.13),base-h*.13,pw*.045,h*.1]);return{S,A,w}}
+  function shape(g,s){g.beginPath();if(s[1]==="rect")g.rect(s[2],s[3],s[4],s[5]);else{const[x,y,r]=[s[2],s[3],s[4]];g.moveTo(x-r,y);g.quadraticCurveTo(x-r,y-r*1.1,x,y-r*1.6);g.quadraticCurveTo(x+r,y-r*1.1,x+r,y)}g.fill()}
+  function drawSky(t){
+    const[g,w,h]=size(sky);if(!skyline||skyline.w!==w)skyline=build(w,h);
+    const mx=reduce?0:mouse-.5,my=reduce?0:mouseY-.5;
+    const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,v("--bg"));gr.addColorStop(.5,v("--sky1"));gr.addColorStop(1,v("--sky2"));g.fillStyle=gr;g.fillRect(0,0,w,h);
+    g.fillStyle=v("--glow");g.globalAlpha=.9;g.beginPath();g.arc(w*.7-mx*8,h*.62-my*6,Math.min(w,h)*.12,0,7);g.fill();g.globalAlpha=1;
+    // light shafts
+    g.globalAlpha=.08;g.fillStyle=v("--glow");for(let i=0;i<4;i++){g.beginPath();g.moveTo(w*(.2+i*.18)-mx*30,0);g.lineTo(w*(.26+i*.18)-mx*30,0);g.lineTo(w*(.5+i*.08),h);g.lineTo(w*(.44+i*.08),h);g.fill()}g.globalAlpha=1;
+    const L=[[-my*6,-mx*12,.45],[-my*10,-mx*26,.8],[-my*14,-mx*44,1]];
+    L.forEach(([dy,dx,a],li)=>{g.save();g.translate(dx,dy);g.globalAlpha=a;g.fillStyle=v("--sil");skyline.S.forEach(s=>{if(s[0]===li)shape(g,s)});
+      if(li===2){g.fillStyle=v("--glow");g.globalAlpha=.55;skyline.A.forEach(([x,y,aw,ah])=>{g.beginPath();g.moveTo(x,y+ah);g.lineTo(x,y+aw);g.quadraticCurveTo(x,y,x+aw/2,y-aw*.4);g.quadraticCurveTo(x+aw,y,x+aw,y+aw);g.lineTo(x+aw,y+ah);g.fill()})}
+      g.restore()});
+    const fg=g.createLinearGradient(0,0,0,h*.55);fg.addColorStop(0,v("--bg"));fg.addColorStop(1,"transparent");g.fillStyle=fg;g.fillRect(0,0,w,h*.55);
+    const shadow=dark();if(!parts.length){const R=rng(9);for(let i=0;i<150;i++)parts.push([R()*w,R()*h,.3+R()*1.6,R()])}
+    g.fillStyle=shadow?v("--glow"):v("--gold");
+    parts.forEach(p=>{if(t){if(shadow){p[1]-=p[2]*.6;p[0]+=Math.sin(t/700+p[3]*9)*.4;if(p[1]<0){p[1]=h;p[0]=Math.random()*w}}else{p[0]+=p[2]*.9;p[1]+=p[2]*.25;if(p[0]>w){p[0]=0;p[1]=Math.random()*h}}}
+      g.globalAlpha=.25+p[3]*.6;g.fillRect(p[0],p[1],p[2]+.6,p[2]+.6)});g.globalAlpha=1;
+  }
+  function loop(t){drawSky(t);drawFx();requestAnimationFrame(loop)}
+  addEventListener("resize",()=>{skyline=null;parts=[];if(reduce)drawSky(0)});
+
+  /* ---------- screens & routing ---------- */
+  const SCREENS={boot:"s-boot",title:"s-title",menu:"s-menu",games:"s-games",about:"s-about",contact:"s-contact",project:"s-project"};
+  const ROOMS=["menu","games","about","contact"];
+  const HINTS={title:"<kbd>Any key</kbd> begin",menu:"<kbd>↑</kbd><kbd>↓</kbd> select &nbsp; <kbd>Enter</kbd> open",games:"<kbd>←</kbd><kbd>→</kbd> browse &nbsp; <kbd>Enter</kbd> open &nbsp; <kbd>Esc</kbd> back",
+    about:"<kbd>Esc</kbd> back",contact:"<kbd>Esc</kbd> back",project:"<kbd>Esc</kbd> back",boot:""};
+  const PLACE={boot:"Gate",title:"Gate",menu:"Throne room",games:"The Chronicle",about:"The Architect",contact:"Messenger",project:"The Chronicle"};
+  let cur=null;
+  function show(name,slug){
+    const prev=cur;
+    Object.entries(SCREENS).forEach(([k,id])=>{$(id).hidden=k!==name});
+    cur=name;
+    if(prev&&prev!=="boot"&&prev!==name&&!reduce){const w=$("wipe");w.classList.remove("go");void w.offsetWidth;w.classList.add("go");sfx("whoosh")}
+    visit(name);$("hint").innerHTML=HINTS[name]||"";$("where").textContent=PLACE[name];
+    if(name!=="project"){const vd=$("p-video");if(vd.pause)vd.pause()}
+    if(name!=="games")document.querySelectorAll("#gallery video").forEach(x=>{x.pause();x.classList.remove("on")});
+    if(name==="project")renderProject(slug);
+    if(name==="games")renderGames();
+    const s=$(SCREENS[name]);if(s.classList.contains("scrollable"))s.scrollTop=0;
+
+    s.style.animation="none";void s.offsetWidth;s.style.animation="";
+    if(name==="menu"){if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();setMenu(-1)}
+  }
+  function route(){
+    const h=location.hash.slice(1);
+    if(PROJECTS[h])return show("project",h);
+    if(ROOMS.includes(h))return show(h);
+    if(cur===null||cur==="boot")return; show("title");
+  }
+  function go(h){if(location.hash==="#"+h)route();else location.hash=h}
+  function back(){if(cur==="project")go("games");else if(["games","about","contact"].includes(cur))go("menu");else if(cur==="menu"){history.replaceState(null,"",location.pathname+location.search);show("title")}}
+  document.querySelectorAll("[data-back]").forEach(b=>b.addEventListener("click",back));
+  addEventListener("hashchange",route);
+
+  /* boot then title (deep links skip straight in) */
+  function boot(){
+    const h=location.hash.slice(1);
+    if(PROJECTS[h]||ROOMS.includes(h)){cur="title";route();return}
+    if(reduce){show("title");return}
+    show("boot");let p=0;const bar=$("boot-bar"),pct=$("boot-pct");
+    const iv=setInterval(()=>{p=Math.min(100,p+4+Math.random()*9);bar.style.width=p+"%";pct.textContent=Math.round(p)+"%";
+      if(p>=100){clearInterval(iv);setTimeout(()=>show("title"),250)}},70);
+  }
+
+  /* title: any key or click */
+  $("s-title").addEventListener("click",()=>go("menu"));
+
+  /* menu */
+  const mb=[...document.querySelectorAll("#menu button")];let menuIdx=-1;
+  /* nothing is selected until the visitor hovers an option or uses the arrow keys */
+  function setMenu(i,focus){const n=i<0?-1:(i+mb.length)%mb.length;if(n!==menuIdx&&n>=0)sfx("tick");menuIdx=n;mb.forEach((b,k)=>b.setAttribute("aria-current",String(k===menuIdx)));if(focus&&n>=0)mb[n].focus({preventScroll:true})}
+  mb.forEach((b,i)=>{b.addEventListener("mouseenter",()=>setMenu(i));b.addEventListener("mouseleave",()=>{if(document.activeElement===b)b.blur();setMenu(-1)});b.addEventListener("focus",()=>setMenu(i));b.addEventListener("click",()=>go(b.dataset.go))});
+  $("game-count").textContent=String(SLUGS.length).padStart(2,"0");$("g-count").textContent=String(SLUGS.length).padStart(2,"0");
+
+  /* games */
+  let gIdx=0;
+  function renderGames(){
+    $("gallery").innerHTML=SLUGS.map((s,i)=>{const p=PROJECTS[s];return '<button class="door" data-i="'+i+'" aria-current="'+(i===gIdx)+'"><div class="arch"><img src="'+esc(p.thumb)+'" alt=""><video muted playsinline preload="metadata" poster="'+esc(p.thumb)+'" src="'+esc(p.video)+'" aria-hidden="true"></video><span class="live"><i></i>Highlights</span></div><div class="num">'+String(i+1).padStart(2,"0")+'</div><h3>'+esc(p.title)+'</h3><div class="meta">'+esc(p.year+" · "+p.engine)+'</div></button>'}).join("");
+    [...$("gallery").children].forEach(d=>{tilt(d.querySelector(".arch"),14);d.addEventListener("mouseenter",()=>setGame(+d.dataset.i));d.addEventListener("focus",()=>setGame(+d.dataset.i));d.addEventListener("click",()=>go(SLUGS[+d.dataset.i]))});
+    setGame(gIdx);
+  }
+  function playHighlights(){
+    [...document.querySelectorAll("#gallery .door")].forEach((d,k)=>{const vd=d.querySelector("video");if(!vd)return;const p=PROJECTS[SLUGS[k]],h=p.highlight||[0,1e9];
+      if(!vd.dataset.wired){vd.dataset.wired="1";vd.addEventListener("timeupdate",()=>{if(vd.currentTime<h[0]-.5||vd.currentTime>h[1])vd.currentTime=h[0]});
+        vd.addEventListener("ended",()=>{vd.currentTime=h[0];vd.play().catch(()=>{})});vd.addEventListener("playing",()=>vd.classList.add("on"))}
+      if(k===gIdx&&cur==="games"&&!reduce){if(vd.currentTime<h[0]){try{vd.currentTime=h[0]}catch(e){}}const pr=vd.play();if(pr&&pr.catch)pr.catch(()=>{})}
+      else{vd.pause();vd.classList.remove("on")}});
+  }
+  function setGame(i){const n=(i+SLUGS.length)%SLUGS.length;if(n!==gIdx)sfx("tick");gIdx=n;const p=PROJECTS[SLUGS[gIdx]];playHighlights();
+    [...$("gallery").children].forEach((d,k)=>d.setAttribute("aria-current",String(k===gIdx)));
+    $("g-meta").textContent=String(gIdx+1).padStart(2,"0")+" · "+p.meta;$("g-desc").textContent=p.blurb;
+    const d=$("gallery").children[gIdx];if(d)d.scrollIntoView({block:"nearest",inline:"center",behavior:reduce?"auto":"smooth"})}
+  $("g-open").addEventListener("click",()=>go(SLUGS[gIdx]));
+
+  /* project */
+  function renderProject(slug){const p=PROJECTS[slug];
+    $("p-meta").textContent=p.meta;$("p-title").textContent=p.title;$("p-pitch").textContent=p.pitch;$("p-cap").textContent=p.caption;
+    const vd=$("p-video");if(vd.getAttribute("src")!==p.video){vd.poster=p.thumb;vd.src=p.video}
+    vd.muted=true;vd.loop=true;try{vd.currentTime=0}catch(e){}const pp=vd.play();if(pp&&pp.catch)pp.catch(()=>{});
+    $("p-facts").innerHTML=p.facts.map(([k,x])=>'<div><span class="lbl">'+esc(k)+'</span><b>'+esc(x)+'</b></div>').join("");
+    $("p-about").innerHTML=p.about.map(x=>'<p>'+esc(x)+'</p>').join("");
+    $("p-loop").innerHTML=p.loop.map(([a,b])=>'<li><div><b>'+esc(a)+'</b><p>'+esc(b)+'</p></div></li>').join("");
+    $("p-built").innerHTML=p.built.map(([a,b])=>'<li><b>'+esc(a)+'</b><p>'+esc(b)+'</p></li>').join("");
+    $("p-chal").innerHTML=p.challenges.map(x=>'<p>'+esc(x)+'</p>').join("");
+    $("p-dl").innerHTML=p.details.map(([k,x])=>'<dt>'+esc(k)+'</dt><dd>'+esc(x)+'</dd>').join("");
+    $("p-tags").innerHTML=p.tags.map(x=>'<span>'+esc(x)+'</span>').join("");}
+
+  /* copy email */
+  $("copy").onclick=e=>{const t=$("mail").textContent,b=e.currentTarget;
+    (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{b.textContent="Copied"},()=>{const r=document.createRange();r.selectNodeContents($("mail"));const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent="Press Ctrl+C"}).finally(()=>setTimeout(()=>b.textContent="Copy email",1800))};
+
+  /* ---------- sound (off until the viewer turns it on) ---------- */
+  let ac=null, soundOn=true;try{if(localStorage.getItem("chak-sound")==="off")soundOn=false}catch(e){}
+  /* sound is on by default; browsers only let audio start after the visitor's first click, tap or key, so wake it then */
+  function wakeAudio(){if(!soundOn)return;try{if(!ac)ac=new (window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume()}catch(e){}}
+  addEventListener("pointerdown",wakeAudio,true);addEventListener("keydown",wakeAudio,true);addEventListener("touchstart",wakeAudio,{capture:true,passive:true});
+  function tone(f,d,type,g,at,slide){const t=ac.currentTime+(at||0),o=ac.createOscillator(),a=ac.createGain();o.type=type||"sine";o.frequency.setValueAtTime(f,t);
+    if(slide)o.frequency.exponentialRampToValueAtTime(slide,t+d);a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(g||.08,t+.01);a.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(a).connect(ac.destination);o.start(t);o.stop(t+d+.02)}
+  function sfx(kind){if(!soundOn||!ac)return;try{
+    if(kind==="tick")tone(880,.06,"triangle",.04);
+    else if(kind==="whoosh"){const b=ac.createBuffer(1,ac.sampleRate*.4,ac.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.sin(Math.PI*i/d.length)*.35;
+      const s=ac.createBufferSource(),f=ac.createBiquadFilter();f.type="bandpass";f.frequency.setValueAtTime(400,ac.currentTime);f.frequency.exponentialRampToValueAtTime(2400,ac.currentTime+.4);s.buffer=b;s.connect(f).connect(ac.destination);s.start()}
+    else if(kind==="trial")[523,659,784,1047].forEach((f,i)=>tone(f,.25,"triangle",.06,i*.09));
+  }catch(e){}}
+  function paintSound(){$("snd").setAttribute("aria-pressed",String(soundOn));$("snd").textContent=soundOn?"Sound on":"Sound off"}
+  $("snd").onclick=e=>{e.stopPropagation();soundOn=!soundOn;try{localStorage.setItem("chak-sound",soundOn?"on":"off")}catch(err){}
+    if(soundOn)wakeAudio();paintSound();sfx("tick")};
+  paintSound();
+
+  /* ---------- trials (achievements) ---------- */
+  const TRIALS={gate:"The gate opens",explorer:"Cartographer: visited every room",shadow:"Into the shadow"};
+  let won=[];try{won=JSON.parse(localStorage.getItem("chak-trials")||"[]").filter(id=>id in TRIALS)}catch(e){}
+  const seen=new Set();let toastT=0;
+  function paintTrials(){$("trials").textContent="Trials "+won.length+"/"+Object.keys(TRIALS).length}
+  function achieve(id){if(won.includes(id))return;won.push(id);try{localStorage.setItem("chak-trials",JSON.stringify(won))}catch(e){}paintTrials();
+    $("toast-text").textContent=TRIALS[id];const t=$("toast");t.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("on"),3200);sfx("trial");burst(innerWidth/2,innerHeight-90,40)}
+  function visit(name){seen.add(name==="project"?"games":name);if(name==="menu")achieve("gate");if(ROOMS.every(r=>seen.has(r)))achieve("explorer")}
+  paintTrials();
+
+  /* ---------- sand trail and bursts on the cursor ---------- */
+  const fx=$("fx");let grains=[];
+  function emit(x,y,n,spd){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,s=(spd||40)*(.3+Math.random());grains.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-20,life:1,r:.8+Math.random()*1.8})}}
+  function burst(x,y,n){if(!reduce)emit(x,y,n,180)}
+  addEventListener("pointermove",e=>{if(!reduce&&e.pointerType==="mouse")emit(e.clientX,e.clientY,2,30)});
+  addEventListener("pointerdown",e=>{burst(e.clientX,e.clientY,18)});
+  function drawFx(){const[g,w,h]=size(fx);g.clearRect(0,0,w,h);if(!grains.length)return;const c1=v("--glow"),c2=v("--gold");
+    grains=grains.filter(p=>p.life>0);grains.forEach(p=>{p.x+=p.vx/60;p.y+=p.vy/60;p.vy+=90/60;p.vx*=.97;p.life-=.022;g.globalAlpha=Math.max(0,p.life);g.fillStyle=p.r>1.6?c1:c2;g.fillRect(p.x,p.y,p.r,p.r)});g.globalAlpha=1;
+    if(grains.length>600)grains.splice(0,grains.length-600)}
+
+  /* ---------- tilt toward the pointer ---------- */
+  function tilt(el,amt){if(!el||reduce)return;el.addEventListener("pointermove",e=>{const r=el.getBoundingClientRect();
+      el.style.setProperty("--ry",(((e.clientX-r.left)/r.width-.5)*amt).toFixed(2)+"deg");el.style.setProperty("--rx",((.5-(e.clientY-r.top)/r.height)*amt*.7).toFixed(2)+"deg")});
+    el.addEventListener("pointerleave",()=>{el.style.removeProperty("--rx");el.style.removeProperty("--ry")})}
+  mb.forEach(b=>tilt(b.querySelector(".big"),10));
+
+
+  /* keyboard */
+  addEventListener("keydown",e=>{
+    if(e.metaKey||e.ctrlKey||e.altKey)return;
+    const k=e.key, tag=(e.target.tagName||"");
+    if(k==="Escape"){if(cur!=="title"&&cur!=="boot"){e.preventDefault();back()}return}
+    if(cur==="title"){if(!["Tab","Shift"].includes(k)){e.preventDefault();go("menu")}return}
+    if(cur==="menu"){if(k==="ArrowDown"||k==="s"){e.preventDefault();setMenu(menuIdx+1,true)}else if(k==="ArrowUp"||k==="w"){e.preventDefault();setMenu(menuIdx<0?mb.length-1:menuIdx-1,true)}
+      else if(k==="Enter"&&tag!=="BUTTON"&&menuIdx>=0){e.preventDefault();go(mb[menuIdx].dataset.go)}return}
+    if(cur==="games"){if(k==="ArrowRight"||k==="d"){e.preventDefault();setGame(gIdx+1)}else if(k==="ArrowLeft"||k==="a"){e.preventDefault();setGame(gIdx-1)}
+      else if(k==="Enter"&&tag!=="BUTTON"){e.preventDefault();go(SLUGS[gIdx])}}
+  });
+
+  sync(); boot(); if(!reduce)requestAnimationFrame(loop); else drawSky(0);
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{skyline=null});
+})();
+</script>
+</body>
+</html>
