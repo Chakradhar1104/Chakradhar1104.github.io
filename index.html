@@ -97,7 +97,9 @@ button{font:inherit;color:inherit}
 @keyframes stream{0%,78%{opacity:1}80%,100%{opacity:0}}
 #s-title .press{font-family:var(--label);font-weight:700;letter-spacing:.32em;font-size:clamp(13px,1.5vw,16px);color:var(--ink);animation:blink 1.4s steps(2) infinite;margin-top:6px}
 @keyframes blink{50%{opacity:.25}}
-#s-title .sub{font-family:var(--title);font-size:clamp(17px,2vw,22px);margin:0;max-width:40ch;color:var(--ink)}
+#s-title .sub{font-family:var(--display);font-weight:800;font-size:clamp(22px,3.4vw,44px);letter-spacing:.32em;padding-left:.32em;text-transform:uppercase;margin:4px 0 6px;color:var(--gold);
+  display:flex;align-items:center;gap:.6em;text-shadow:0 0 24px color-mix(in srgb,var(--glow) 45%,transparent)}
+#s-title .sub::before,#s-title .sub::after{content:"";width:clamp(28px,5vw,72px);height:1px;background:var(--gold);opacity:.7}
 
 /* menu */
 #s-menu{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);align-items:center;gap:24px}
@@ -287,7 +289,7 @@ button{font:inherit;color:inherit}
   <div class="wrap">
     <div class="eyebrow">Portfolio</div>
     <h1 id="name">CHAKRADHAR</h1>
-    <p class="sub">Game developer. Gameplay systems, level design and cinematics in Unity and Unreal.</p>
+    <p class="sub">Game Developer</p>
     <svg class="glass" viewBox="0 0 60 96" aria-hidden="true"><rect x="4" y="2" width="52" height="6" rx="1" fill="currentColor"/>
       <rect x="4" y="88" width="52" height="6" rx="1" fill="currentColor"/>
       <path d="M8 6v84M52 6v84" stroke="currentColor" stroke-width="2"/>
