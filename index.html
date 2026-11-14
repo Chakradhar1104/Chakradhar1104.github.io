@@ -646,7 +646,7 @@ button{font:inherit;color:inherit}
      - a trial unlocked: a small finger-cymbal shimmer over a three-note Hijaz figure */
   const HIJAZ=[293.66,311.13,369.99,392.00,440.00,466.16,523.25,587.33];
   let master=null;
-  function out(){if(!master){master=ac.createGain();master.gain.value=.55;const lp=ac.createBiquadFilter();lp.type="lowpass";lp.frequency.value=5200;master.connect(lp).connect(ac.destination)}return master}
+  function out(){if(!master){master=ac.createGain();master.gain.value=1;const lp=ac.createBiquadFilter();lp.type="lowpass";lp.frequency.value=5200;master.connect(lp).connect(ac.destination)}return master}
   function pluck(f,at,g){const t=ac.currentTime+(at||0),o1=ac.createOscillator(),o2=ac.createOscillator(),a=ac.createGain(),lp=ac.createBiquadFilter();
     o1.type="triangle";o2.type="sine";o1.frequency.setValueAtTime(f*1.012,t);o1.frequency.exponentialRampToValueAtTime(f,t+.06);o2.frequency.setValueAtTime(f*2,t);
     lp.type="lowpass";lp.frequency.setValueAtTime(2400,t);lp.frequency.exponentialRampToValueAtTime(700,t+.4);
@@ -655,15 +655,15 @@ button{font:inherit;color:inherit}
     o1.start(t);o2.start(t);o1.stop(t+.6);o2.stop(t+.6)}
   function sand(g){const d=.55,b=ac.createBuffer(1,ac.sampleRate*d,ac.sampleRate),c=b.getChannelData(0);for(let i=0;i<c.length;i++)c[i]=Math.random()*2-1;
     const s=ac.createBufferSource(),f=ac.createBiquadFilter(),a=ac.createGain(),t=ac.currentTime;s.buffer=b;f.type="bandpass";f.Q.value=.7;
-    f.frequency.setValueAtTime(1800,t);f.frequency.exponentialRampToValueAtTime(700,t+d);a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(g||.022,t+.12);a.gain.exponentialRampToValueAtTime(.0001,t+d);
+    f.frequency.setValueAtTime(1800,t);f.frequency.exponentialRampToValueAtTime(700,t+d);a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(g||.06,t+.12);a.gain.exponentialRampToValueAtTime(.0001,t+d);
     s.connect(f).connect(a).connect(out());s.start(t)}
   function zill(at){const t=ac.currentTime+(at||0);[2637,3951,5274].forEach((f,i)=>{const o=ac.createOscillator(),a=ac.createGain();o.type="sine";o.frequency.value=f;
-    a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(.012/(i+1),t+.004);a.gain.exponentialRampToValueAtTime(.0001,t+1.4-i*.3);o.connect(a).connect(out());o.start(t);o.stop(t+1.5)})}
+    a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(.03/(i+1),t+.004);a.gain.exponentialRampToValueAtTime(.0001,t+1.4-i*.3);o.connect(a).connect(out());o.start(t);o.stop(t+1.5)})}
   let lastTick=0;
   function sfx(kind,i){if(!soundOn||!ac)return;try{
-    if(kind==="tick"){const now=ac.currentTime;if(now-lastTick<.07)return;lastTick=now;pluck(HIJAZ[((i||0)%HIJAZ.length+HIJAZ.length)%HIJAZ.length],0,.045)}
+    if(kind==="tick"){const now=ac.currentTime;if(now-lastTick<.07)return;lastTick=now;pluck(HIJAZ[((i||0)%HIJAZ.length+HIJAZ.length)%HIJAZ.length],0,.11)}
     else if(kind==="whoosh")sand();
-    else if(kind==="trial"){[0,2,4].forEach((n,k)=>pluck(HIJAZ[n]*(k===2?1:1),k*.13,.04));pluck(HIJAZ[7],.39,.035);zill(.39)}
+    else if(kind==="trial"){[0,2,4].forEach((n,k)=>pluck(HIJAZ[n],k*.13,.1));pluck(HIJAZ[7],.39,.09);zill(.39)}
   }catch(e){}}
   function paintSound(){$("snd").setAttribute("aria-pressed",String(soundOn));$("snd").textContent=soundOn?"Sound on":"Sound off"}
   $("snd").onclick=e=>{e.stopPropagation();soundOn=!soundOn;try{localStorage.setItem("chak-sound",soundOn?"on":"off")}catch(err){}
