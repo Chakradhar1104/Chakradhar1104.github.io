@@ -15,6 +15,38 @@
 body{margin:0;font:14px system-ui,sans-serif}
 img{max-width:100%}
 [hidden]{display:none!important}
+
+/* ---------- phone layout fixes ---------- */
+.hudfade{position:fixed;left:0;right:0;z-index:25;pointer-events:none}
+.hudfade.top{top:0;height:calc(54px + env(safe-area-inset-top,0px));background:linear-gradient(var(--bg) 55%,transparent)}
+.hudfade.bot{bottom:0;height:calc(54px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,var(--bg) 45%)}
+.screen{grid-template-columns:minmax(0,1fr)}
+.sheet{min-width:0;max-width:100%}
+.gallery{min-width:0;max-width:100%}
+.toast{width:min(92vw,440px)}
+@media (max-width:820px){
+  .hud.tl > span:last-child{display:none}
+  .hud.tr{gap:6px}
+  .hudbtn,.path button{font-size:10.5px;letter-spacing:.1em;padding:5px 8px}
+  .hud.tl{font-size:11px;letter-spacing:.12em}
+  /* menu: the hourglass sits small and centred above the options, never behind them */
+  #s-menu{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;align-content:center;justify-items:start;gap:clamp(14px,4vh,32px)}
+  .relic{position:relative;right:auto;top:auto;z-index:auto;opacity:1;width:min(42vw,170px);justify-self:center}
+  .menu .big{font-size:clamp(34px,11vw,52px)}
+  .menu .cap{font-size:15px}
+  /* games: one arch at a time with the next one peeking in */
+  .door{flex:0 0 72vw}
+  .gfoot .lbl{white-space:normal;line-height:1.5}
+  .gfoot p{font-size:16px}
+  .pagehead h2{font-size:clamp(30px,9vw,44px)}
+  .sheet{padding:18px 16px}
+  /* lighter, simpler screen transition on phones */
+  .screen{animation:enterSm .35s ease-out both}
+  #s-title h1{font-size:clamp(30px,10vw,44px)}
+  #s-title .sub{font-size:clamp(14px,4.2vw,20px);letter-spacing:.24em}
+  .glass{width:clamp(70px,12vh,110px)}
+}
+@keyframes enterSm{from{opacity:0}}
 </style>
 <style>
 /* Layout: the portfolio plays like a game. Boot -> title ("press any key") -> main menu -> screens.
@@ -270,6 +302,7 @@ button{font:inherit;color:inherit}
 </head>
 <body>
 <div id="sky-wrap" aria-hidden="true"><canvas id="sky-bg"></canvas><canvas id="sky-l0" class="lyr"></canvas><canvas id="sky-l1" class="lyr"></canvas><canvas id="sky-l2" class="lyr"></canvas><canvas id="sky-p"></canvas></div>
+<div class="hudfade top" aria-hidden="true"></div><div class="hudfade bot" aria-hidden="true"></div>
 <div class="frame-line t" aria-hidden="true"></div><div class="frame-line b" aria-hidden="true"></div>
 <div class="hud tl"><span><span class="dot"></span>Chakradhar</span><span style="opacity:.7">Game Developer</span></div>
 <div class="hud tr"><button class="hudbtn" id="snd" aria-pressed="true">Sound on</button><div class="path" role="group" aria-label="Choose your path"><button id="p-light" aria-pressed="false">Light</button><button id="p-shadow" aria-pressed="false">Shadow</button></div></div>
