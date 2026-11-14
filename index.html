@@ -593,7 +593,7 @@ button{font:inherit;color:inherit}
   /* menu */
   const mb=[...document.querySelectorAll("#menu button")];let menuIdx=-1;
   /* nothing is selected until the visitor hovers an option or uses the arrow keys */
-  function setMenu(i,focus){const n=i<0?-1:(i+mb.length)%mb.length;if(n!==menuIdx&&n>=0)sfx("tick");menuIdx=n;mb.forEach((b,k)=>b.setAttribute("aria-current",String(k===menuIdx)));if(focus&&n>=0)mb[n].focus({preventScroll:true})}
+  function setMenu(i,focus){const n=i<0?-1:(i+mb.length)%mb.length;if(n!==menuIdx&&n>=0)sfx("tick",[0,2,4][n]);menuIdx=n;mb.forEach((b,k)=>b.setAttribute("aria-current",String(k===menuIdx)));if(focus&&n>=0)mb[n].focus({preventScroll:true})}
   mb.forEach((b,i)=>{b.addEventListener("mouseenter",()=>setMenu(i));b.addEventListener("mouseleave",()=>{if(document.activeElement===b)b.blur();setMenu(-1)});b.addEventListener("focus",()=>setMenu(i));b.addEventListener("click",()=>go(b.dataset.go))});
   $("game-count").textContent=String(SLUGS.length).padStart(2,"0");$("g-count").textContent=String(SLUGS.length).padStart(2,"0");
 
@@ -611,7 +611,7 @@ button{font:inherit;color:inherit}
       if(k===gIdx&&cur==="games"&&!reduce){if(vd.currentTime<h[0]){try{vd.currentTime=h[0]}catch(e){}}const pr=vd.play();if(pr&&pr.catch)pr.catch(()=>{})}
       else{vd.pause();vd.classList.remove("on")}});
   }
-  function setGame(i){const n=(i+SLUGS.length)%SLUGS.length;if(n!==gIdx)sfx("tick");gIdx=n;const p=PROJECTS[SLUGS[gIdx]];playHighlights();
+  function setGame(i){const n=(i+SLUGS.length)%SLUGS.length;if(n!==gIdx)sfx("tick",n+1);gIdx=n;const p=PROJECTS[SLUGS[gIdx]];playHighlights();
     [...$("gallery").children].forEach((d,k)=>d.setAttribute("aria-current",String(k===gIdx)));
     $("g-meta").textContent=String(gIdx+1).padStart(2,"0")+" · "+p.meta;$("g-desc").textContent=p.blurb;
     const d=$("gallery").children[gIdx];if(d)d.scrollIntoView({block:"nearest",inline:"center",behavior:reduce?"auto":"smooth"})}
@@ -640,17 +640,34 @@ button{font:inherit;color:inherit}
   /* sound is on by default; browsers only let audio start after the visitor's first click, tap or key, so wake it then */
   function wakeAudio(){if(!soundOn)return;try{if(!ac)ac=new (window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume()}catch(e){}}
   addEventListener("pointerdown",wakeAudio,true);addEventListener("keydown",wakeAudio,true);addEventListener("touchstart",wakeAudio,{capture:true,passive:true});
-  function tone(f,d,type,g,at,slide){const t=ac.currentTime+(at||0),o=ac.createOscillator(),a=ac.createGain();o.type=type||"sine";o.frequency.setValueAtTime(f,t);
-    if(slide)o.frequency.exponentialRampToValueAtTime(slide,t+d);a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(g||.08,t+.01);a.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(a).connect(ac.destination);o.start(t);o.stop(t+d+.02)}
-  function sfx(kind){if(!soundOn||!ac)return;try{
-    if(kind==="tick")tone(880,.06,"triangle",.04);
-    else if(kind==="whoosh"){const b=ac.createBuffer(1,ac.sampleRate*.4,ac.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.sin(Math.PI*i/d.length)*.35;
-      const s=ac.createBufferSource(),f=ac.createBiquadFilter();f.type="bandpass";f.frequency.setValueAtTime(400,ac.currentTime);f.frequency.exponentialRampToValueAtTime(2400,ac.currentTime+.4);s.buffer=b;s.connect(f).connect(ac.destination);s.start()}
-    else if(kind==="trial")[523,659,784,1047].forEach((f,i)=>tone(f,.25,"triangle",.06,i*.09));
+  /* Sound design: quiet and sparse, in the desert-palace mood.
+     - menu and gallery: one soft plucked note (oud-like) from a D Hijaz scale, so moving through options plays a little melody
+     - changing screens: a short breath of drifting sand (filtered noise), no swoosh
+     - a trial unlocked: a small finger-cymbal shimmer over a three-note Hijaz figure */
+  const HIJAZ=[293.66,311.13,369.99,392.00,440.00,466.16,523.25,587.33];
+  let master=null;
+  function out(){if(!master){master=ac.createGain();master.gain.value=.55;const lp=ac.createBiquadFilter();lp.type="lowpass";lp.frequency.value=5200;master.connect(lp).connect(ac.destination)}return master}
+  function pluck(f,at,g){const t=ac.currentTime+(at||0),o1=ac.createOscillator(),o2=ac.createOscillator(),a=ac.createGain(),lp=ac.createBiquadFilter();
+    o1.type="triangle";o2.type="sine";o1.frequency.setValueAtTime(f*1.012,t);o1.frequency.exponentialRampToValueAtTime(f,t+.06);o2.frequency.setValueAtTime(f*2,t);
+    lp.type="lowpass";lp.frequency.setValueAtTime(2400,t);lp.frequency.exponentialRampToValueAtTime(700,t+.4);
+    const g2=ac.createGain();g2.gain.value=.25;o2.connect(g2).connect(lp);o1.connect(lp);lp.connect(a).connect(out());
+    a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(g||.05,t+.006);a.gain.exponentialRampToValueAtTime(.0001,t+.55);
+    o1.start(t);o2.start(t);o1.stop(t+.6);o2.stop(t+.6)}
+  function sand(g){const d=.55,b=ac.createBuffer(1,ac.sampleRate*d,ac.sampleRate),c=b.getChannelData(0);for(let i=0;i<c.length;i++)c[i]=Math.random()*2-1;
+    const s=ac.createBufferSource(),f=ac.createBiquadFilter(),a=ac.createGain(),t=ac.currentTime;s.buffer=b;f.type="bandpass";f.Q.value=.7;
+    f.frequency.setValueAtTime(1800,t);f.frequency.exponentialRampToValueAtTime(700,t+d);a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(g||.022,t+.12);a.gain.exponentialRampToValueAtTime(.0001,t+d);
+    s.connect(f).connect(a).connect(out());s.start(t)}
+  function zill(at){const t=ac.currentTime+(at||0);[2637,3951,5274].forEach((f,i)=>{const o=ac.createOscillator(),a=ac.createGain();o.type="sine";o.frequency.value=f;
+    a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(.012/(i+1),t+.004);a.gain.exponentialRampToValueAtTime(.0001,t+1.4-i*.3);o.connect(a).connect(out());o.start(t);o.stop(t+1.5)})}
+  let lastTick=0;
+  function sfx(kind,i){if(!soundOn||!ac)return;try{
+    if(kind==="tick"){const now=ac.currentTime;if(now-lastTick<.07)return;lastTick=now;pluck(HIJAZ[((i||0)%HIJAZ.length+HIJAZ.length)%HIJAZ.length],0,.045)}
+    else if(kind==="whoosh")sand();
+    else if(kind==="trial"){[0,2,4].forEach((n,k)=>pluck(HIJAZ[n]*(k===2?1:1),k*.13,.04));pluck(HIJAZ[7],.39,.035);zill(.39)}
   }catch(e){}}
   function paintSound(){$("snd").setAttribute("aria-pressed",String(soundOn));$("snd").textContent=soundOn?"Sound on":"Sound off"}
   $("snd").onclick=e=>{e.stopPropagation();soundOn=!soundOn;try{localStorage.setItem("chak-sound",soundOn?"on":"off")}catch(err){}
-    if(soundOn)wakeAudio();paintSound();sfx("tick")};
+    if(soundOn)wakeAudio();paintSound();sfx("tick",0)};
   paintSound();
 
   /* ---------- trials (achievements) ---------- */
